@@ -519,6 +519,81 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+
+        .clock-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0 10px;
+            border-top: 0.5px solid var(--color-border-tertiary);
+            border-bottom: 0.5px solid var(--color-border-tertiary);
+            margin: 12px 0 14px;
+        }
+        .clock-display {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--color-text-primary);
+            font-variant-numeric: tabular-nums;
+            font-family: 'Courier New', monospace;
+        }
+        .clock-seconds {
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--color-text-secondary);
+        }
+        .date-display { text-align: right; }
+        .date-weekday { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
+        .date-full { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+
+        .version-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 0.5px solid var(--color-border-tertiary);
+        }
+        .version-label { font-size: 10px; color: var(--color-text-tertiary); }
+        .version-badge {
+            font-size: 10px;
+            color: var(--color-text-secondary);
+            background: var(--color-background-primary);
+            border: 0.5px solid var(--color-border-tertiary);
+            border-radius: 6px;
+            padding: 3px 9px;
+            cursor: pointer;
+            position: relative;
+        }
+        .version-tooltip {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 26px;
+            background: var(--color-background-primary);
+            border: 0.5px solid var(--color-border-secondary);
+            border-radius: 12px;
+            padding: 12px 14px;
+            min-width: 240px;
+            z-index: 50;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .version-tooltip.open { display: block; }
+        .vt-title { font-size: 11px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 8px; }
+        .vt-row { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+        .vt-row:last-child { border-bottom: none; }
+        .vt-ver { font-size: 10px; font-weight: 600; color: var(--color-text-secondary); min-width: 34px; font-family: monospace; }
+        .vt-date { font-size: 10px; color: var(--color-text-tertiary); min-width: 76px; }
+        .vt-desc { font-size: 10px; color: var(--color-text-secondary); }
+
+        .footer {
+            text-align: center;
+            padding: 18px 0 8px;
+            border-top: 0.5px solid var(--color-border-tertiary);
+            margin-top: 8px;
+        }
+        .footer-brand { font-size: 12px; font-weight: 700; color: var(--color-text-secondary); letter-spacing: 1.5px; }
+        .footer-sub { font-size: 10px; color: var(--color-text-tertiary); margin-top: 3px; }
     </style>
 </head>
 <body>
@@ -530,6 +605,13 @@
                 <button class="nav-btn" onclick="mudarMes(-1)">‹</button>
                 <span class="mes-label" id="mes-label"></span>
                 <button class="nav-btn" onclick="mudarMes(1)">›</button>
+            </div>
+        </div>
+        <div class="clock-bar">
+            <div class="clock-display"><span id="clock-hhmm">00:00</span><span class="clock-seconds" id="clock-ss">:00</span></div>
+            <div class="date-display">
+                <div class="date-weekday" id="date-weekday"></div>
+                <div class="date-full" id="date-full"></div>
             </div>
         </div>
         <div class="config-row">
@@ -547,6 +629,18 @@
             <button class="btn-io btn-exportar" onclick="exportarDados()">⬆️ Exportar dados</button>
             <button class="btn-io btn-importar" onclick="document.getElementById('input-importar').click()">⬇️ Importar dados</button>
             <input type="file" id="input-importar" accept=".json" style="display:none" onchange="importarDados(event)">
+        </div>
+        <div class="version-bar">
+            <span class="version-label">Última atualização: 27/04/2026</span>
+            <span class="version-badge" id="ver-badge" onclick="toggleVersao()">v4.0
+                <div class="version-tooltip" id="ver-tooltip">
+                    <div class="vt-title">Histórico de versões</div>
+                    <div class="vt-row"><span class="vt-ver">v4.0</span><span class="vt-date">27/04/2026</span><span class="vt-desc">Marca alterada para Lueksam Technology</span></div>
+                    <div class="vt-row"><span class="vt-ver">v3.0</span><span class="vt-date">27/04/2026</span><span class="vt-desc">Rodapé com marca e histórico de versões</span></div>
+                    <div class="vt-row"><span class="vt-ver">v2.0</span><span class="vt-date">27/04/2026</span><span class="vt-desc">Relógio digital e data em tempo real</span></div>
+                    <div class="vt-row"><span class="vt-ver">v1.0</span><span class="vt-date">27/04/2026</span><span class="vt-desc">Lançamento inicial — ponto, HE e resumo</span></div>
+                </div>
+            </span>
         </div>
     </div>
 
@@ -597,7 +691,13 @@
             <div class="resumo-row"><span>Atestados</span><span id="r-atestados">0</span></div>
         </div>
     </div>
-</div>
+
+    <div class="footer">
+        <div class="footer-brand">LUEKSAM TECHNOLOGY</div>
+        <div class="footer-sub">Soluções em tecnologia</div>
+    </div>
+
+</div><!-- /app -->
 
 <div id="modal" class="modal-overlay hidden">
     <div class="modal">
@@ -1092,6 +1192,31 @@
 
     window.exportarDados = exportarDados;
     window.importarDados = importarDados;
+</script>
+
+<script>
+    (function(){
+        var MR = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+        var DR = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+        function p(v){ return String(v).padStart(2,'0'); }
+        function tick(){
+            var n = new Date();
+            document.getElementById('clock-hhmm').textContent = p(n.getHours())+':'+p(n.getMinutes());
+            document.getElementById('clock-ss').textContent = ':'+p(n.getSeconds());
+            document.getElementById('date-weekday').textContent = DR[n.getDay()];
+            document.getElementById('date-full').textContent = n.getDate()+' de '+MR[n.getMonth()]+' de '+n.getFullYear();
+        }
+        tick();
+        setInterval(tick, 1000);
+
+        window.toggleVersao = function(){
+            document.getElementById('ver-tooltip').classList.toggle('open');
+        };
+        document.addEventListener('click', function(e){
+            var b = document.getElementById('ver-badge');
+            if(b && !b.contains(e.target)) document.getElementById('ver-tooltip').classList.remove('open');
+        });
+    })();
 </script>
 </body>
 </html>
