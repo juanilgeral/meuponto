@@ -1,1097 +1,464 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="theme-color" content="#1C1C1E">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Meu Ponto · App</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        :root {
-            --color-background-primary: #FFFFFF;
-            --color-background-secondary: #F2F2F7;
-            --color-background-tertiary: #E5E5EA;
-            --color-text-primary: #000000;
-            --color-text-secondary: #6C6C70;
-            --color-text-tertiary: #8E8E93;
-            --color-border-tertiary: #C6C6C8;
-            --color-border-secondary: #D9D9DF;
-            --color-success: #0F6E56;
-            --color-warning: #BA7517;
-            --color-error: #A32D2D;
-            --color-info: #185FA5;
-            --border-radius-md: 10px;
-            --border-radius-lg: 14px;
-            --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --color-background-primary: #000000;
-                --color-background-secondary: #1C1C1E;
-                --color-background-tertiary: #2C2C2E;
-                --color-text-primary: #FFFFFF;
-                --color-text-secondary: #8E8E93;
-                --color-text-tertiary: #636366;
-                --color-border-tertiary: #38383A;
-                --color-border-secondary: #3A3A3C;
-            }
-        }
-
-        body {
-            font-family: var(--font-sans);
-            background-color: var(--color-background-primary);
-            color: var(--color-text-primary);
-            overflow-x: hidden;
-        }
-
-        .app {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 12px 16px 32px 16px;
-            min-height: 100vh;
-            background-color: var(--color-background-primary);
-        }
-
-        .header {
-            background: var(--color-background-secondary);
-            border: 0.5px solid var(--color-border-tertiary);
-            border-radius: var(--border-radius-lg);
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .app-title {
-            font-size: 20px;
-            font-weight: 590;
-            letter-spacing: -0.3px;
-            background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-text-secondary) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .mes-nav {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--color-background-tertiary);
-            padding: 4px 8px;
-            border-radius: 40px;
-        }
-
-        .nav-btn {
-            background: var(--color-background-primary);
-            border: none;
-            border-radius: 30px;
-            width: 36px;
-            height: 36px;
-            cursor: pointer;
-            color: var(--color-text-primary);
-            font-size: 20px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.1s linear;
-        }
-
-        .nav-btn:active {
-            transform: scale(0.94);
-            background: var(--color-border-tertiary);
-        }
-
-        .mes-label {
-            font-size: 16px;
-            font-weight: 500;
-            min-width: 110px;
-            text-align: center;
-        }
-
-        .config-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .config-field {
-            flex: 1;
-        }
-
-        .config-field label {
-            font-size: 12px;
-            color: var(--color-text-secondary);
-            margin-bottom: 5px;
-            display: block;
-            font-weight: 500;
-        }
-
-        .config-field input {
-            width: 100%;
-            padding: 10px 12px;
-            font-size: 15px;
-            border: 0.5px solid var(--color-border-tertiary);
-            border-radius: 12px;
-            background: var(--color-background-primary);
-            color: var(--color-text-primary);
-        }
-        
-        .config-field input[type="text"] {
-            font-family: var(--font-sans);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .stat-card {
-            background: var(--color-background-secondary);
-            border-radius: 18px;
-            padding: 14px 12px;
-            transition: transform 0.05s linear;
-        }
-
-        .stat-card:active {
-            transform: scale(0.98);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--color-text-secondary);
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-
-        .stat-val {
-            font-size: 22px;
-            font-weight: 630;
-            letter-spacing: -0.2px;
-        }
-
-        .stat-val.green { color: #2C9E7A; }
-        .stat-val.amber { color: #E58C2E; }
-        .stat-val.red { color: #E5484D; }
-        .stat-val.blue { color: #3B82F6; }
-
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 18px;
-            background: var(--color-background-secondary);
-            padding: 4px;
-            border-radius: 40px;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 10px 0;
-            font-size: 15px;
-            font-weight: 500;
-            border: none;
-            border-radius: 32px;
-            cursor: pointer;
-            background: transparent;
-            color: var(--color-text-secondary);
-            text-align: center;
-            transition: all 0.2s ease;
-        }
-
-        .tab.active {
-            background: var(--color-background-primary);
-            color: var(--color-text-primary);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        }
-
-        .section-view {
-            display: none;
-        }
-
-        .section-view.active {
-            display: block;
-        }
-
-        .days-section {
-            background: var(--color-background-primary);
-            border: 0.5px solid var(--color-border-tertiary);
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .days-header {
-            padding: 14px 16px;
-            border-bottom: 0.5px solid var(--color-border-tertiary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--color-background-secondary);
-        }
-
-        .days-title {
-            font-weight: 590;
-            font-size: 15px;
-        }
-
-        .day-row {
-            padding: 12px 16px;
-            border-bottom: 0.5px solid var(--color-border-tertiary);
-            display: grid;
-            grid-template-columns: 48px 1fr 85px 36px;
-            gap: 8px;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .day-row:active {
-            background: var(--color-background-secondary);
-        }
-
-        .day-num {
-            font-size: 17px;
-            font-weight: 530;
-        }
-
-        .day-name {
-            font-size: 12px;
-            color: var(--color-text-tertiary);
-            margin-top: 2px;
-        }
-
-        .badge {
-            display: inline-block;
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 500;
-        }
-
-        .badge-feriado { background: #E6F1FB; color: #185FA5; }
-        .badge-falta { background: #FCEBEB; color: #A32D2D; }
-        .badge-atestado { background: #FAEEDA; color: #BA7517; }
-        .badge-folga { background: #F1EFE8; color: #5F5E5A; }
-        .badge-normal { color: var(--color-text-secondary); font-size: 12px; }
-
-        .day-he {
-            font-size: 13px;
-            font-weight: 530;
-            text-align: right;
-        }
-        .he-pos { color: #0F6E56; }
-        .he-neg { color: #A32D2D; }
-        .he-zero { color: var(--color-text-tertiary); }
-
-        .edit-btn {
-            background: var(--color-background-tertiary);
-            border: none;
-            border-radius: 32px;
-            width: 36px;
-            height: 36px;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--color-text-primary);
-        }
-
-        .edit-btn:active {
-            background: var(--color-border-secondary);
-            transform: scale(0.94);
-        }
-
-        .resumo-section {
-            background: var(--color-background-primary);
-            border: 0.5px solid var(--color-border-tertiary);
-            border-radius: 20px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-
-        .resumo-title {
-            font-weight: 590;
-            font-size: 16px;
-            margin-bottom: 12px;
-        }
-
-        .resumo-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 0.5px solid var(--color-border-tertiary);
-            font-size: 14px;
-        }
-
-        .resumo-row:last-child {
-            border-bottom: none;
-        }
-
-        .he-detail-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            padding: 6px 0;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            z-index: 1000;
-            padding: 0;
-        }
-
-        .modal {
-            background: var(--color-background-primary);
-            border-radius: 28px 28px 0 0;
-            width: 100%;
-            max-width: 500px;
-            padding: 24px 20px 32px;
-            border-top: 0.5px solid var(--color-border-tertiary);
-            animation: slideUp 0.25s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 590;
-            margin-bottom: 20px;
-        }
-
-        .field-group {
-            margin-bottom: 18px;
-        }
-
-        .field-group label {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 6px;
-            display: block;
-            color: var(--color-text-secondary);
-        }
-
-        .field-group input, .field-group select {
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            border: 0.5px solid var(--color-border-tertiary);
-            border-radius: 14px;
-            background: var(--color-background-secondary);
-            color: var(--color-text-primary);
-        }
-
-        .time-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            gap: 8px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .btn-primary {
-            flex: 1;
-            padding: 14px;
-            background: var(--color-text-primary);
-            color: var(--color-background-primary);
-            border: none;
-            border-radius: 40px;
-            font-size: 17px;
-            font-weight: 590;
-            cursor: pointer;
-        }
-
-        .btn-secondary {
-            flex: 1;
-            padding: 14px;
-            background: var(--color-background-tertiary);
-            color: var(--color-text-primary);
-            border: none;
-            border-radius: 40px;
-            font-size: 17px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .hidden { display: none; }
-
-        .sunday .day-num, .sunday .day-name { color: #E5484D; }
-        .saturday .day-num, .saturday .day-name { color: #3B82F6; }
-
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-        
-        .info-box {
-            background: var(--color-background-tertiary);
-            border-radius: 12px;
-            padding: 10px;
-            margin-bottom: 12px;
-            font-size: 13px;
-            text-align: center;
-        }
-
-        .io-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-        }
-
-        .btn-io {
-            flex: 1;
-            padding: 10px 8px;
-            border: none;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: 0.1s linear;
-        }
-
-        .btn-io:active {
-            transform: scale(0.96);
-        }
-
-        .btn-exportar {
-            background: var(--color-background-tertiary);
-            color: var(--color-text-primary);
-        }
-
-        .btn-importar {
-            background: var(--color-text-primary);
-            color: var(--color-background-primary);
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 32px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: #1C1C1E;
-            color: #fff;
-            padding: 12px 22px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 500;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 9999;
-            transition: all 0.25s ease;
-            white-space: nowrap;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Meu Ponto — Lueksam Technology</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f4f4f4;color:#111;min-height:100vh}
+.app{max-width:420px;margin:0 auto;padding:12px}
+
+/* HEADER */
+.header{background:#fff;border:1px solid #e0e0e0;border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.app-title{font-size:17px;font-weight:600;color:#111}
+.mes-nav{display:flex;align-items:center;gap:8px}
+.nav-btn{background:none;border:1px solid #ccc;border-radius:8px;width:30px;height:30px;cursor:pointer;color:#555;font-size:16px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.nav-btn:active{background:#f0f0f0}
+.mes-label{font-size:13px;font-weight:600;color:#111;min-width:90px;text-align:center}
+
+/* CLOCK */
+.clock-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid #eee;border-bottom:1px solid #eee;margin-bottom:10px}
+.clock-display{font-size:30px;font-weight:600;letter-spacing:2px;color:#111;font-variant-numeric:tabular-nums;font-family:'Courier New',monospace}
+.clock-seconds{font-size:20px;font-weight:400;color:#888}
+.date-display{text-align:right}
+.date-day{font-size:13px;font-weight:600;color:#111}
+.date-full{font-size:11px;color:#888;margin-top:2px}
+
+/* CONFIG */
+.config-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.config-field label{font-size:11px;color:#888;display:block;margin-bottom:3px}
+.config-field input{width:100%;padding:6px 8px;font-size:13px;border:1px solid #ddd;border-radius:8px;background:#fafafa;color:#111;-webkit-appearance:none}
+
+/* VERSION */
+.version-bar{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid #eee}
+.version-label{font-size:10px;color:#aaa}
+.version-badge{font-size:10px;color:#666;background:#f5f5f5;border:1px solid #ddd;border-radius:4px;padding:2px 8px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent}
+.version-tooltip{display:none;position:absolute;right:0;top:24px;background:#fff;border:1px solid #ddd;border-radius:10px;padding:12px 14px;min-width:230px;z-index:50;box-shadow:0 4px 16px rgba(0,0,0,0.12)}
+.version-tooltip.open{display:block}
+.vt-title{font-size:11px;font-weight:600;color:#111;margin-bottom:8px}
+.vt-row{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px solid #f0f0f0}
+.vt-row:last-child{border-bottom:none}
+.vt-ver{font-size:10px;font-weight:600;color:#555;min-width:32px;font-family:monospace}
+.vt-date{font-size:10px;color:#aaa;min-width:74px}
+.vt-desc{font-size:10px;color:#666}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tab{flex:1;padding:9px;font-size:13px;font-weight:500;border:1px solid #ddd;border-radius:10px;cursor:pointer;background:#fff;color:#888;text-align:center;-webkit-tap-highlight-color:transparent}
+.tab.active{background:#111;color:#fff;border-color:#111}
+
+/* STATS */
+.section-view{display:none}
+.section-view.active{display:block}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-card{background:#fff;border-radius:10px;padding:10px 12px;border:1px solid #e8e8e8}
+.stat-label{font-size:11px;color:#888;margin-bottom:4px}
+.stat-val{font-size:19px;font-weight:600;color:#111}
+.stat-val.green{color:#0F6E56}
+.stat-val.amber{color:#BA7517}
+.stat-val.red{color:#A32D2D}
+.stat-val.blue{color:#185FA5}
+
+/* DAYS */
+.days-section{background:#fff;border:1px solid #e8e8e8;border-radius:14px;margin-bottom:12px;overflow:hidden}
+.days-header{padding:10px 14px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
+.days-title{font-size:13px;font-weight:600;color:#111}
+.btn-add{padding:5px 12px;font-size:12px;font-weight:500;background:#111;color:#fff;border:none;border-radius:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.day-row{padding:9px 14px;border-bottom:1px solid #f0f0f0;display:grid;grid-template-columns:40px 1fr 82px 30px;gap:6px;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.day-row:last-child{border-bottom:none}
+.day-row:active{background:#fafafa}
+.day-num{font-size:13px;font-weight:600;color:#888;text-align:center}
+.day-name{font-size:10px;color:#bbb;text-align:center;margin-top:2px}
+.day-info{display:flex;flex-direction:column;gap:2px}
+.day-he{font-size:12px;font-weight:600;text-align:right}
+.he-pos{color:#0F6E56}
+.he-neg{color:#A32D2D}
+.he-zero{color:#bbb}
+.edit-btn{background:none;border:1px solid #e0e0e0;border-radius:6px;width:28px;height:28px;cursor:pointer;color:#888;font-size:13px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+
+/* BADGES */
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:5px;font-weight:600}
+.badge-feriado{background:#E6F1FB;color:#185FA5}
+.badge-falta{background:#FCEBEB;color:#A32D2D}
+.badge-atestado{background:#FAEEDA;color:#BA7517}
+.badge-folga{background:#F1EFE8;color:#5F5E5A}
+.badge-normal{color:#888;font-size:11px}
+
+/* SUNDAY / SATURDAY */
+.day-row.sunday .day-num,.day-row.sunday .day-name{color:#A32D2D}
+.day-row.saturday .day-num,.day-row.saturday .day-name{color:#185FA5}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;justify-content:center;z-index:200;padding:0}
+.modal-overlay.hidden{display:none}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:20px 20px 32px;width:100%;max-width:420px}
+.modal-drag{width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:15px;font-weight:600;margin-bottom:16px;color:#111}
+.field-group{margin-bottom:12px}
+.field-group label{font-size:12px;color:#888;display:block;margin-bottom:4px;font-weight:500}
+.field-group input,.field-group select{width:100%;padding:10px 12px;font-size:15px;border:1px solid #ddd;border-radius:10px;background:#fafafa;color:#111;-webkit-appearance:none;appearance:none}
+.field-group select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.time-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
+.time-row input{padding:8px 4px;font-size:13px;text-align:center}
+.time-labels{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:4px}
+.time-labels span{font-size:10px;color:#aaa;text-align:center}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.btn-primary{flex:1;padding:12px;background:#111;color:#fff;border:none;border-radius:12px;font-size:15px;cursor:pointer;font-weight:600;-webkit-tap-highlight-color:transparent}
+.btn-secondary{flex:1;padding:12px;background:#f5f5f5;color:#555;border:none;border-radius:12px;font-size:15px;cursor:pointer;font-weight:500;-webkit-tap-highlight-color:transparent}
+.btn-danger{padding:12px;background:#FCEBEB;color:#A32D2D;border:none;border-radius:12px;font-size:15px;cursor:pointer;font-weight:500;margin-top:8px;width:100%;-webkit-tap-highlight-color:transparent}
+
+/* RESUMO */
+.resumo-section{background:#fff;border:1px solid #e8e8e8;border-radius:14px;padding:14px;margin-bottom:12px}
+.resumo-title{font-size:13px;font-weight:600;color:#111;margin-bottom:10px}
+.resumo-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13px}
+.resumo-row:last-child{border-bottom:none}
+.resumo-row.total{font-size:15px;font-weight:600;padding-top:10px;margin-top:4px}
+.muted{color:#888}
+.he-detail-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;color:#888;border-bottom:1px solid #f5f5f5}
+.he-detail-row:last-child{border-bottom:none}
+.he-detail-row span:last-child{color:#111;font-weight:600}
+
+/* FOOTER */
+.footer{text-align:center;padding:16px 0 8px;border-top:1px solid #eee;margin-top:4px}
+.footer-brand{font-size:12px;font-weight:700;color:#555;letter-spacing:1px}
+.footer-sub{font-size:10px;color:#bbb;margin-top:3px}
+</style>
 </head>
 <body>
 <div class="app">
-    <div class="header">
-        <div class="header-top">
-            <div class="app-title">⏱️ Meu Ponto</div>
-            <div class="mes-nav">
-                <button class="nav-btn" onclick="mudarMes(-1)">‹</button>
-                <span class="mes-label" id="mes-label"></span>
-                <button class="nav-btn" onclick="mudarMes(1)">›</button>
-            </div>
-        </div>
-        <div class="config-row">
-            <div class="config-field">
-                <label>💰 Seu Salário (R$) - opcional</label>
-                <input type="text" id="salario" value="" placeholder="Ex: 3626,88" onchange="salvarConfig()" oninput="formatarSalario(this)">
-            </div>
-            <div class="config-field">
-                <label>⏱️ Jornada seg-sex (h)</label>
-                <input type="number" id="jornada-semana" value="8" step="0.5" min="1" max="12" onchange="salvarConfig()">
-            </div>
-        </div>
-        <div class="info-box" id="info-valor-hora" style="font-size:12px"></div>
-        <div class="io-row">
-            <button class="btn-io btn-exportar" onclick="exportarDados()">⬆️ Exportar dados</button>
-            <button class="btn-io btn-importar" onclick="document.getElementById('input-importar').click()">⬇️ Importar dados</button>
-            <input type="file" id="input-importar" accept=".json" style="display:none" onchange="importarDados(event)">
-        </div>
-    </div>
 
-    <div class="tabs">
-        <button class="tab active" data-tab="lancamentos">📋 Lançamentos</button>
-        <button class="tab" data-tab="resumo">📊 Resumo</button>
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="app-title">Meu Ponto</div>
+    <div class="mes-nav">
+      <button class="nav-btn" onclick="mudarMes(-1)">&#8249;</button>
+      <span class="mes-label" id="mes-label">Jun 2024</span>
+      <button class="nav-btn" onclick="mudarMes(1)">&#8250;</button>
     </div>
-
-    <div id="view-lancamentos" class="section-view active">
-        <div class="stats-grid">
-            <div class="stat-card"><div class="stat-label">Horas extras</div><div class="stat-val green" id="stat-he">0h 00m</div></div>
-            <div class="stat-card"><div class="stat-label">Horas negativas</div><div class="stat-val red" id="stat-hn">0h 00m</div></div>
-            <div class="stat-card"><div class="stat-label">Dias lançados</div><div class="stat-val blue" id="stat-dias">0</div></div>
-            <div class="stat-card"><div class="stat-label">💰 Valor a receber</div><div class="stat-val amber" id="stat-valor">R$ --</div></div>
-        </div>
-
-        <div class="days-section">
-            <div class="days-header">
-                <span class="days-title">📅 Dias do mês</span>
-                <button class="btn-secondary btn-small" style="padding:8px 16px;font-size:13px;border-radius:30px;" onclick="abrirModal(null)">+ Lançar</button>
-            </div>
-            <div id="lista-dias"></div>
-        </div>
+  </div>
+  <div class="clock-bar">
+    <div class="clock-display"><span id="clock-hhmm">00:00</span><span class="clock-seconds" id="clock-ss">:00</span></div>
+    <div class="date-display">
+      <div class="date-day" id="date-weekday">Segunda-feira</div>
+      <div class="date-full" id="date-full">27 de abril de 2026</div>
     </div>
-
-    <div id="view-resumo" class="section-view">
-        <div class="resumo-section">
-            <div class="resumo-title">✨ HORAS EXTRAS</div>
-            <div class="he-detail-row"><span>HE dias de semana (50%)</span><span id="r-he-semana">0h 00m</span></div>
-            <div class="he-detail-row"><span>HE domingos/feriados (100%)</span><span id="r-he-dom">0h 00m</span></div>
-            <div class="he-detail-row" style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--color-border-tertiary)"><span style="font-weight:500;">Total HE bruto</span><span id="r-he-total" style="color:#2C9E7A;font-weight:600;">R$ --</span></div>
-        </div>
-        <div class="resumo-section">
-            <div class="resumo-title">🧾 CÁLCULO DO PAGAMENTO</div>
-            <div class="resumo-row"><span class="muted">Salário base</span><span id="r-salario">R$ --</span></div>
-            <div class="resumo-row"><span class="muted">+ HE dias semana</span><span id="r-val-he-sem" class="he-pos">R$ --</span></div>
-            <div class="resumo-row"><span class="muted">+ HE dom/feriados</span><span id="r-val-he-dom" class="he-pos">R$ --</span></div>
-            <div class="resumo-row"><span class="muted">+ DSR sobre HE</span><span id="r-dsr" class="he-pos">R$ --</span></div>
-            <div class="resumo-row"><span class="muted">− Descontos (faltas)</span><span id="r-descontos" class="he-neg">R$ --</span></div>
-            <div class="resumo-row total" style="margin-top:8px;padding-top:10px;font-weight:700;"><span>Total a receber</span><span id="r-total" style="color:#2C9E7A;font-size:17px;">R$ --</span></div>
-        </div>
-        <div class="resumo-section">
-            <div class="resumo-title">📆 DIAS TRABALHADOS</div>
-            <div class="resumo-row"><span>Dias úteis</span><span id="r-uteis">0</span></div>
-            <div class="resumo-row"><span>Sábados</span><span id="r-sabados">0</span></div>
-            <div class="resumo-row"><span>Domingos/feriados</span><span id="r-domingos">0</span></div>
-            <div class="resumo-row"><span>Faltas</span><span id="r-faltas" style="color:#E5484D;">0</span></div>
-            <div class="resumo-row"><span>Atestados</span><span id="r-atestados">0</span></div>
-        </div>
+  </div>
+  <div class="config-row">
+    <div class="config-field">
+      <label>Salário (R$)</label>
+      <input type="number" id="salario" value="3215.43" step="0.01" inputmode="decimal" onchange="recalcular()">
     </div>
+    <div class="config-field">
+      <label>Jornada seg-sex (h)</label>
+      <input type="number" id="jornada-semana" value="8" step="0.5" min="1" max="12" inputmode="decimal" onchange="recalcular()">
+    </div>
+  </div>
+  <div class="version-bar">
+    <span class="version-label">Última atualização: 27/04/2026</span>
+    <span class="version-badge" id="ver-badge" onclick="toggleTooltip()">v4.0
+      <div class="version-tooltip" id="ver-tooltip">
+        <div class="vt-title">Histórico de versões</div>
+        <div class="vt-row"><span class="vt-ver">v4.0</span><span class="vt-date">27/04/2026</span><span class="vt-desc">Marca alterada para Lueksam Technology</span></div>
+        <div class="vt-row"><span class="vt-ver">v3.0</span><span class="vt-date">27/04/2026</span><span class="vt-desc">Rodapé com marca e histórico de versões</span></div>
+        <div class="vt-row"><span class="vt-ver">v2.0</span><span class="vt-date">27/04/2026</span><span class="vt-desc">Relógio digital e data em tempo real</span></div>
+        <div class="vt-row"><span class="vt-ver">v1.0</span><span class="vt-date">27/04/2026</span><span class="vt-desc">Lançamento inicial — ponto, HE e resumo</span></div>
+      </div>
+    </span>
+  </div>
 </div>
 
-<div id="modal" class="modal-overlay hidden">
-    <div class="modal">
-        <div class="modal-title" id="modal-title">Lançar dia</div>
-        <div class="field-group">
-            <label>Data</label>
-            <input type="date" id="m-data">
-        </div>
-        <div class="field-group">
-            <label>Tipo</label>
-            <select id="m-tipo" onchange="atualizarCampos()">
-                <option value="normal">🔹 Normal (horários)</option>
-                <option value="feriado">🌟 Feriado trabalhado</option>
-                <option value="falta">⚠️ Falta</option>
-                <option value="atestado">🩺 Atestado</option>
-                <option value="folga">🌿 Folga/DSR</option>
-            </select>
-        </div>
-        <div id="campos-horario">
-            <div class="field-group">
-                <label>⏰ Entrada → Saída almoço → Retorno → Saída</label>
-                <div class="time-row">
-                    <input type="time" id="m-e1" value="08:00">
-                    <input type="time" id="m-s1" value="12:00">
-                    <input type="time" id="m-e2" value="13:00">
-                    <input type="time" id="m-s2" value="17:00">
-                </div>
-            </div>
-        </div>
-        <div class="modal-actions">
-            <button class="btn-secondary" onclick="fecharModal()">Cancelar</button>
-            <button class="btn-primary" onclick="salvarDia()">Salvar</button>
-        </div>
-    </div>
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" id="tab-lanc" onclick="trocarAba('lancamentos')">Lançamentos</button>
+  <button class="tab" id="tab-resu" onclick="trocarAba('resumo')">Resumo</button>
 </div>
 
-<div id="toast" class="toast"></div>
+<!-- LANÇAMENTOS -->
+<div id="view-lancamentos" class="section-view active">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Horas extras</div><div class="stat-val green" id="stat-he">0h 00m</div></div>
+    <div class="stat-card"><div class="stat-label">Horas negativas</div><div class="stat-val red" id="stat-hn">0h 00m</div></div>
+    <div class="stat-card"><div class="stat-label">Dias lançados</div><div class="stat-val blue" id="stat-dias">0</div></div>
+    <div class="stat-card"><div class="stat-label">Valor a receber</div><div class="stat-val amber" id="stat-valor">R$ 0,00</div></div>
+  </div>
+  <div class="days-section">
+    <div class="days-header">
+      <span class="days-title">Dias do mês</span>
+      <button class="btn-add" onclick="abrirModal(null)">+ Lançar</button>
+    </div>
+    <div id="lista-dias"></div>
+  </div>
+</div>
+
+<!-- RESUMO -->
+<div id="view-resumo" class="section-view">
+  <div class="resumo-section">
+    <div class="resumo-title">Horas extras</div>
+    <div class="he-detail-row"><span>HE dias de semana (50%)</span><span id="r-he-semana">0h 00m</span></div>
+    <div class="he-detail-row"><span>HE domingos/feriados (100%)</span><span id="r-he-dom">0h 00m</span></div>
+    <div class="he-detail-row" style="padding-top:8px;margin-top:4px;border-top:1px solid #eee"><span style="font-size:13px;color:#111;font-weight:600">Total HE</span><span id="r-he-total" style="color:#0F6E56;font-size:13px;font-weight:700">R$ 0,00</span></div>
+  </div>
+  <div class="resumo-section">
+    <div class="resumo-title">Cálculo do pagamento</div>
+    <div class="resumo-row"><span class="muted">Salário base</span><span id="r-salario">R$ 0,00</span></div>
+    <div class="resumo-row"><span class="muted">HE dias semana</span><span id="r-val-he-sem" class="he-pos">R$ 0,00</span></div>
+    <div class="resumo-row"><span class="muted">HE dom/feriados</span><span id="r-val-he-dom" class="he-pos">R$ 0,00</span></div>
+    <div class="resumo-row"><span class="muted">DSR sobre HE</span><span id="r-dsr" class="he-pos">R$ 0,00</span></div>
+    <div class="resumo-row"><span class="muted">Descontos (faltas)</span><span id="r-descontos" class="he-neg">R$ 0,00</span></div>
+    <div class="resumo-row total"><span>Total a receber</span><span id="r-total" style="color:#0F6E56">R$ 0,00</span></div>
+  </div>
+  <div class="resumo-section">
+    <div class="resumo-title">Dias trabalhados</div>
+    <div class="resumo-row"><span class="muted">Dias úteis trabalhados</span><span id="r-uteis">0</span></div>
+    <div class="resumo-row"><span class="muted">Sábados trabalhados</span><span id="r-sabados">0</span></div>
+    <div class="resumo-row"><span class="muted">Domingos/feriados</span><span id="r-domingos">0</span></div>
+    <div class="resumo-row"><span class="muted">Faltas</span><span id="r-faltas" style="color:#A32D2D">0</span></div>
+    <div class="resumo-row"><span class="muted">Atestados</span><span id="r-atestados">0</span></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-brand">LUEKSAM TECHNOLOGY</div>
+  <div class="footer-sub">Soluções em tecnologia</div>
+</div>
+
+</div><!-- /app -->
+
+<!-- MODAL -->
+<div class="modal-overlay hidden" id="modal" onclick="fecharModalFora(event)">
+  <div class="modal" id="modal-box">
+    <div class="modal-drag"></div>
+    <div class="modal-title" id="modal-title">Lançar dia</div>
+    <div class="field-group">
+      <label>Data</label>
+      <input type="date" id="m-data">
+    </div>
+    <div class="field-group">
+      <label>Tipo</label>
+      <select id="m-tipo" onchange="atualizarCampos()">
+        <option value="normal">Normal (com horários)</option>
+        <option value="feriado">Feriado trabalhado</option>
+        <option value="falta">Falta</option>
+        <option value="atestado">Atestado</option>
+        <option value="folga">Folga / DSR</option>
+      </select>
+    </div>
+    <div id="campos-horario">
+      <div class="field-group">
+        <label>Horários</label>
+        <div class="time-labels">
+          <span>Entrada</span><span>Saída alm.</span><span>Retorno</span><span>Saída</span>
+        </div>
+        <div class="time-row">
+          <input type="time" id="m-e1" value="04:00">
+          <input type="time" id="m-s1" value="10:00">
+          <input type="time" id="m-e2" value="11:00">
+          <input type="time" id="m-s2" value="14:00">
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-primary" onclick="salvarDia()">Salvar</button>
+    </div>
+    <button class="btn-danger" id="btn-excluir" onclick="excluirDia()" style="display:none">Excluir lançamento</button>
+  </div>
+</div>
 
 <script>
-    const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-    const DIAS_SEMANA = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DIAS_LONG=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+const DIAS_CURTO=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 
-    let mesAtual = new Date().getMonth();
-    let anoAtual = new Date().getFullYear();
-    let lancamentos = {};
+// ---- RELÓGIO ----
+function atualizarRelogio(){
+  const n=new Date();
+  document.getElementById('clock-hhmm').textContent=p(n.getHours())+':'+p(n.getMinutes());
+  document.getElementById('clock-ss').textContent=':'+p(n.getSeconds());
+  document.getElementById('date-weekday').textContent=DIAS_LONG[n.getDay()];
+  document.getElementById('date-full').textContent=n.getDate()+' de '+MESES[n.getMonth()]+' de '+n.getFullYear();
+}
+function p(v){return String(v).padStart(2,'0');}
+atualizarRelogio();
+setInterval(atualizarRelogio,1000);
 
-    // FUNÇÃO CORRIGIDA: converte string com ponto de milhar e vírgula decimal
-    function converterSalarioParaNumero(valorTexto) {
-        if (!valorTexto || valorTexto.trim() === '') return 0;
-        
-        let limpo = valorTexto.toString().trim();
-        
-        // Remove R$ se tiver
-        limpo = limpo.replace(/R\$/, '').trim();
-        
-        // Estratégia: Remove todos os pontos (separador de milhar) e troca vírgula por ponto
-        // Exemplo: "3.626,88" -> remove pontos -> "3626,88" -> troca vírgula -> "3626.88"
-        limpo = limpo.replace(/\./g, '');  // remove pontos de milhar
-        limpo = limpo.replace(/,/g, '.');  // vírgula vira ponto decimal
-        
-        // Remove qualquer coisa que não seja número ou ponto
-        limpo = limpo.replace(/[^0-9.]/g, '');
-        
-        // Garante que só tem um ponto decimal
-        const partes = limpo.split('.');
-        if (partes.length > 2) {
-            limpo = partes[0] + '.' + partes.slice(1).join('');
-        }
-        
-        const numero = parseFloat(limpo);
-        return isNaN(numero) ? 0 : numero;
-    }
-    
-    function formatarSalario(input) {
-        let valor = input.value;
-        // Remove tudo que não for número, vírgula ou ponto
-        valor = valor.replace(/[^0-9,.]/g, '');
-        input.value = valor;
-    }
-    
-    function obterSalarioNumerico() {
-        const campo = document.getElementById('salario');
-        return converterSalarioParaNumero(campo.value);
-    }
-    
-    function getValorHora() {
-        const salario = obterSalarioNumerico();
-        if (!salario || isNaN(salario) || salario <= 0) return 0;
-        const jornadaSemana = parseFloat(document.getElementById('jornada-semana').value) || 8;
-        const jornadaSabado = jornadaSemana / 2;
-        // Cálculo padrão CLT: 44h semanais x 4,33 semanas = 190,52h/mês
-        const horasSemana = (jornadaSemana * 5) + jornadaSabado; // total horas na semana
-        const horasMes = horasSemana * 4.33;
-        const valorHora = salario / horasMes;
-        
-        // Mostra info para debug
-        const infoBox = document.getElementById('info-valor-hora');
-        if (salario > 0) {
-            infoBox.innerHTML = `💰 Salário: R$ ${salario.toFixed(2).replace('.',',')} | Valor da hora: R$ ${valorHora.toFixed(2).replace('.',',')} (base ${horasMes.toFixed(1)}h/mês)`;
-        } else {
-            infoBox.innerHTML = `⚠️ Informe seu salário para calcular os valores`;
-        }
-        
-        return valorHora;
-    }
+// ---- ESTADO ----
+let mesAtual=5, anoAtual=2024;
+let lancamentos=JSON.parse(localStorage.getItem('meuPonto_dados')||'{}');
+let editandoDia=null;
 
-    function carregarDados() {
-        const saved = localStorage.getItem('meuPontoApp');
-        if (saved) {
-            try {
-                lancamentos = JSON.parse(saved);
-            } catch(e) { console.error(e); }
-        }
-        
-        const salarioSalvo = localStorage.getItem('meuPontoSalario');
-        const jornadaSalva = localStorage.getItem('meuPontoJornada');
-        if (salarioSalvo) document.getElementById('salario').value = salarioSalvo;
-        if (jornadaSalva) document.getElementById('jornada-semana').value = jornadaSalva;
-    }
+function salvarStorage(){localStorage.setItem('meuPonto_dados',JSON.stringify(lancamentos));}
+function chave(){return anoAtual+'-'+mesAtual;}
+function getLanc(){return lancamentos[chave()]||{};}
+function setLanc(dia,dados){if(!lancamentos[chave()])lancamentos[chave()]={};lancamentos[chave()][dia]=dados;salvarStorage();}
+function delLanc(dia){if(lancamentos[chave()])delete lancamentos[chave()][dia];salvarStorage();}
 
-    function salvarConfig() {
-        const salarioTexto = document.getElementById('salario').value;
-        const jornada = document.getElementById('jornada-semana').value;
-        if (salarioTexto) localStorage.setItem('meuPontoSalario', salarioTexto);
-        if (jornada) localStorage.setItem('meuPontoJornada', jornada);
-        recalcular();
-    }
+// ---- MÊS ----
+function mudarMes(d){
+  mesAtual+=d;
+  if(mesAtual>11){mesAtual=0;anoAtual++;}
+  if(mesAtual<0){mesAtual=11;anoAtual--;}
+  document.getElementById('mes-label').textContent=MESES[mesAtual].substring(0,3)+' '+anoAtual;
+  renderDias();recalcular();
+}
 
-    function salvarLancamentos() {
-        localStorage.setItem('meuPontoApp', JSON.stringify(lancamentos));
-    }
+// ---- CÁLCULOS ----
+function diasNoMes(m,a){return new Date(a,m+1,0).getDate();}
+function diaSemana(dia){return new Date(anoAtual,mesAtual,dia).getDay();}
+function hDec(h){if(!h)return 0;const[hh,mm]=h.split(':').map(Number);return hh+mm/60;}
+function decHHMM(d){const neg=d<0;d=Math.abs(d);const h=Math.floor(d),m=Math.round((d-h)*60);return(neg?'-':'')+h+'h '+p(m)+'m';}
 
-    function chave(){ return `${anoAtual}-${mesAtual}`; }
-    function getLancamentos(){ return lancamentos[chave()] || {}; }
-    
-    function setLancamento(dia, dados){
-        if(!lancamentos[chave()]) lancamentos[chave()] = {};
-        lancamentos[chave()][dia] = dados;
-        salvarLancamentos();
-    }
+function calcDia(dados,dia){
+  const ds=diaSemana(dia),ehDom=ds===0,ehSab=ds===6;
+  const sal=parseFloat(document.getElementById('salario').value)||3215.43;
+  const jSem=parseFloat(document.getElementById('jornada-semana').value)||8;
+  const jSab=jSem/2;
+  const valorH=sal/((jSem*4+jSab)*4.33);
+  if(!dados||dados.tipo==='folga')return{trab:0,he:0,hn:0,valHe:0,falta:false,atestado:false};
+  if(dados.tipo==='falta')return{trab:0,he:0,hn:ehSab?jSab:ehDom?0:jSem,valHe:0,falta:true,atestado:false};
+  if(dados.tipo==='atestado')return{trab:0,he:0,hn:0,valHe:0,falta:false,atestado:true};
+  const jornada=ehDom?0:ehSab?jSab:jSem;
+  const e1=hDec(dados.e1),s1=hDec(dados.s1),e2=hDec(dados.e2),s2=hDec(dados.s2);
+  let trab=0;
+  if(!e2||!s2){if(s1>e1)trab=s1-e1;}
+  else{if(s1>e1)trab+=s1-e1;if(s2>e2)trab+=s2-e2;}
+  const he=Math.max(0,trab-jornada),hn=Math.max(0,jornada-trab);
+  const domFer=dados.tipo==='feriado'||ehDom;
+  return{trab,he,hn,valHe:he*valorH*(domFer?2:1.5),falta:false,atestado:false,domFer};
+}
 
-    function mudarMes(d){
-        mesAtual += d;
-        if(mesAtual > 11){ mesAtual = 0; anoAtual++; }
-        if(mesAtual < 0){ mesAtual = 11; anoAtual--; }
-        atualizarLabelMes();
-        renderDias();
-        recalcular();
-    }
+// ---- RECALCULAR ----
+function recalcular(){
+  const lcs=getLanc(),total=diasNoMes(mesAtual,anoAtual);
+  let tHE=0,tHEd=0,tHN=0,vHE=0,vHEd=0,dias=0,uteis=0,sabs=0,doms=0,faltas=0,atests=0;
+  for(let d=1;d<=total;d++){
+    const ds=diaSemana(d),dados=lcs[d];if(!dados)continue;
+    const r=calcDia(dados,d);
+    if(r.falta){faltas++;continue;}if(r.atestado){atests++;continue;}if(dados.tipo==='folga')continue;
+    dias++;
+    if(ds===0||dados.tipo==='feriado')doms++;else if(ds===6)sabs++;else uteis++;
+    if(r.domFer){tHEd+=r.he;vHEd+=r.valHe;}else{tHE+=r.he;vHE+=r.valHe;}
+    tHN+=r.hn;
+  }
+  const sal=parseFloat(document.getElementById('salario').value)||3215.43;
+  const subHE=vHE+vHEd,dsr=subHE*0.16667,desc=(sal/30)*faltas,total_=sal+subHE+dsr-desc;
+  document.getElementById('stat-he').textContent=decHHMM(tHE+tHEd);
+  document.getElementById('stat-hn').textContent=decHHMM(tHN);
+  document.getElementById('stat-dias').textContent=dias;
+  document.getElementById('stat-valor').textContent='R$ '+total_.toFixed(2).replace('.',',');
+  document.getElementById('r-he-semana').textContent=decHHMM(tHE);
+  document.getElementById('r-he-dom').textContent=decHHMM(tHEd);
+  document.getElementById('r-he-total').textContent='R$ '+subHE.toFixed(2).replace('.',',');
+  document.getElementById('r-salario').textContent='R$ '+sal.toFixed(2).replace('.',',');
+  document.getElementById('r-val-he-sem').textContent='+ R$ '+vHE.toFixed(2).replace('.',',');
+  document.getElementById('r-val-he-dom').textContent='+ R$ '+vHEd.toFixed(2).replace('.',',');
+  document.getElementById('r-dsr').textContent='+ R$ '+dsr.toFixed(2).replace('.',',');
+  document.getElementById('r-descontos').textContent='- R$ '+desc.toFixed(2).replace('.',',');
+  document.getElementById('r-total').textContent='R$ '+total_.toFixed(2).replace('.',',');
+  document.getElementById('r-uteis').textContent=uteis;
+  document.getElementById('r-sabados').textContent=sabs;
+  document.getElementById('r-domingos').textContent=doms;
+  document.getElementById('r-faltas').textContent=faltas;
+  document.getElementById('r-atestados').textContent=atests;
+}
 
-    function atualizarLabelMes() {
-        document.getElementById('mes-label').textContent = `${MESES[mesAtual]} ${anoAtual}`;
-    }
+// ---- RENDER DIAS ----
+function renderDias(){
+  const lcs=getLanc(),total=diasNoMes(mesAtual,anoAtual);let html='';
+  for(let d=1;d<=total;d++){
+    const ds=diaSemana(d),cls=ds===0?'sunday':ds===6?'saturday':'',dados=lcs[d];
+    let info='',he='';
+    if(dados){
+      const r=calcDia(dados,d);
+      if(dados.tipo==='falta')info='<span class="badge badge-falta">Falta</span>';
+      else if(dados.tipo==='atestado')info='<span class="badge badge-atestado">Atestado</span>';
+      else if(dados.tipo==='feriado')info='<span class="badge badge-feriado">Feriado trab.</span>';
+      else if(dados.tipo==='folga')info='<span class="badge badge-folga">Folga/DSR</span>';
+      else info='<span class="badge-normal">'+(r.trab>0?r.trab.toFixed(1)+'h trab.':'--')+'</span>';
+      if(r.he>0)he='<span class="day-he he-pos">+'+decHHMM(r.he)+'</span>';
+      else if(r.hn>0)he='<span class="day-he he-neg">-'+decHHMM(r.hn)+'</span>';
+      else if(dados.tipo!=='falta'&&dados.tipo!=='folga')he='<span class="day-he he-zero">ok</span>';
+    }else{info='<span style="font-size:11px;color:#ccc">sem lançamento</span>';}
+    html+=`<div class="day-row ${cls}" onclick="abrirModal(${d})">
+      <div><div class="day-num">${d}</div><div class="day-name">${DIAS_CURTO[ds]}</div></div>
+      <div class="day-info">${info}</div>
+      <div>${he}</div>
+      <div><button class="edit-btn" onclick="event.stopPropagation();abrirModal(${d})">&#9998;</button></div>
+    </div>`;
+  }
+  document.getElementById('lista-dias').innerHTML=html;
+}
 
-    function diasNoMes(m, a){ return new Date(a, m+1, 0).getDate(); }
-    function diaSemana(dia){ return new Date(anoAtual, mesAtual, dia).getDay(); }
+// ---- MODAL ----
+function abrirModal(dia){
+  editandoDia=dia;
+  const d=dia||new Date().getDate();
+  document.getElementById('m-data').value=anoAtual+'-'+p(mesAtual+1)+'-'+p(d);
+  const dados=dia&&getLanc()[d];
+  if(dados){
+    document.getElementById('m-tipo').value=dados.tipo||'normal';
+    document.getElementById('m-e1').value=dados.e1||'04:00';
+    document.getElementById('m-s1').value=dados.s1||'10:00';
+    document.getElementById('m-e2').value=dados.e2||'11:00';
+    document.getElementById('m-s2').value=dados.s2||'14:00';
+    document.getElementById('btn-excluir').style.display='block';
+  }else{
+    document.getElementById('m-tipo').value='normal';
+    document.getElementById('m-e1').value='04:00';
+    document.getElementById('m-s1').value='10:00';
+    document.getElementById('m-e2').value='11:00';
+    document.getElementById('m-s2').value='14:00';
+    document.getElementById('btn-excluir').style.display='none';
+  }
+  document.getElementById('modal-title').textContent=dia?'Dia '+d+' de '+MESES[mesAtual]:'Novo lançamento';
+  atualizarCampos();
+  document.getElementById('modal').classList.remove('hidden');
+}
+function fecharModal(){document.getElementById('modal').classList.add('hidden');}
+function fecharModalFora(e){if(e.target===document.getElementById('modal'))fecharModal();}
+function atualizarCampos(){
+  const tipo=document.getElementById('m-tipo').value;
+  document.getElementById('campos-horario').style.display=['normal','feriado'].includes(tipo)?'block':'none';
+}
+function salvarDia(){
+  const dataVal=document.getElementById('m-data').value;if(!dataVal)return;
+  const[,, d]=dataVal.split('-').map(Number);
+  setLanc(d,{tipo:document.getElementById('m-tipo').value,e1:document.getElementById('m-e1').value,s1:document.getElementById('m-s1').value,e2:document.getElementById('m-e2').value,s2:document.getElementById('m-s2').value});
+  fecharModal();renderDias();recalcular();
+}
+function excluirDia(){
+  const dataVal=document.getElementById('m-data').value;if(!dataVal)return;
+  const[,, d]=dataVal.split('-').map(Number);
+  delLanc(d);fecharModal();renderDias();recalcular();
+}
 
-    function horaParaDecimal(h){
-        if(!h) return 0;
-        const [hh,mm] = h.split(':').map(Number);
-        return hh + mm/60;
-    }
-    
-    function decimalParaHHMM(d){
-        const neg = d < 0;
-        d = Math.abs(d);
-        const h = Math.floor(d);
-        const m = Math.round((d - h)*60);
-        if(m === 60) return (neg?'-':'') + (h+1) + 'h 00m';
-        return (neg?'-':'') + h + 'h ' + String(m).padStart(2,'0') + 'm';
-    }
+// ---- TABS ----
+function trocarAba(aba){
+  ['lanc','resu'].forEach(t=>document.getElementById('tab-'+t).classList.remove('active'));
+  ['lancamentos','resumo'].forEach(s=>document.getElementById('view-'+s).classList.remove('active'));
+  document.getElementById('view-'+aba).classList.add('active');
+  document.getElementById('tab-'+(aba==='lancamentos'?'lanc':'resu')).classList.add('active');
+}
 
-    function calcularHorasDia(dados, dia){
-        const ds = diaSemana(dia);
-        const ehDomingo = ds === 0;
-        const ehSabado = ds === 6;
-        const jornadaSemana = parseFloat(document.getElementById('jornada-semana').value) || 8;
-        const jornadaSabado = jornadaSemana/2;
-        const valorHora = getValorHora();
+// ---- TOOLTIP VERSÃO ----
+function toggleTooltip(){
+  const t=document.getElementById('ver-tooltip');
+  t.classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  if(!document.getElementById('ver-badge').contains(e.target)){
+    document.getElementById('ver-tooltip').classList.remove('open');
+  }
+});
 
-        if(!dados || dados.tipo === 'folga') {
-            return {trabalhado:0, he:0, hn:0, valHe:0, falta:false, atestado:false, ehDomFer:false};
-        }
-        
-        if(dados.tipo === 'falta') {
-            let jornadaFalta = ehSabado ? jornadaSabado : (ehDomingo ? 0 : jornadaSemana);
-            return {trabalhado:0, he:0, hn: jornadaFalta, valHe:0, falta:true, atestado:false, ehDomFer:false};
-        }
-        
-        if(dados.tipo === 'atestado') {
-            return {trabalhado:0, he:0, hn:0, valHe:0, falta:false, atestado:true, ehDomFer:false};
-        }
-
-        const e1 = horaParaDecimal(dados.e1);
-        const s1 = horaParaDecimal(dados.s1);
-        const e2 = horaParaDecimal(dados.e2);
-        const s2 = horaParaDecimal(dados.s2);
-        
-        let hTrab = 0;
-        if(s1 > e1) hTrab += s1 - e1;
-        if(s2 > e2) hTrab += s2 - e2;
-        
-        const ehFeriado = (dados.tipo === 'feriado');
-        
-        let jornadaEsperada = 0;
-        if(ehFeriado || ehDomingo) {
-            jornadaEsperada = 0;
-        } else if(ehSabado) {
-            jornadaEsperada = jornadaSabado;
-        } else {
-            jornadaEsperada = jornadaSemana;
-        }
-        
-        const he = Math.max(0, hTrab - jornadaEsperada);
-        const hn = (ehFeriado || ehDomingo) ? 0 : Math.max(0, jornadaEsperada - hTrab);
-        
-        let valHe = 0;
-        if(valorHora > 0 && he > 0) {
-            if(ehFeriado || ehDomingo) {
-                valHe = he * valorHora * 2;
-            } else {
-                valHe = he * valorHora * 1.5;
-            }
-        }
-        
-        const ehDomFer = (ehFeriado || ehDomingo);
-        
-        return {
-            trabalhado: hTrab, 
-            he, 
-            hn, 
-            valHe, 
-            falta: false, 
-            atestado: false, 
-            ehDomFer
-        };
-    }
-
-    function recalcular(){
-        const lcs = getLancamentos();
-        const total = diasNoMes(mesAtual, anoAtual);
-        let totalHE = 0, totalHEDom = 0, totalHN = 0;
-        let totalValHE = 0, totalValHEDom = 0;
-        let dias = 0, uteis = 0, sabados = 0, domingos = 0, faltas = 0, atestados = 0;
-        
-        // Primeiro recalcula o valor hora para mostrar info
-        getValorHora();
-        const salario = obterSalarioNumerico();
-        const temSalario = salario > 0;
-
-        for(let d = 1; d <= total; d++){
-            const ds = diaSemana(d);
-            const dados = lcs[d];
-            if(!dados) continue;
-            const r = calcularHorasDia(dados, d);
-            if(r.falta){ faltas++; continue; }
-            if(r.atestado){ atestados++; continue; }
-            if(dados.tipo === 'folga') continue;
-            dias++;
-            if(ds === 0 || dados.tipo === 'feriado') domingos++;
-            else if(ds === 6) sabados++;
-            else uteis++;
-
-            if(r.ehDomFer){ 
-                totalHEDom += r.he; 
-                totalValHEDom += r.valHe; 
-            } else { 
-                totalHE += r.he; 
-                totalValHE += r.valHe; 
-            }
-            totalHN += r.hn;
-        }
-
-        const subtotalHE = totalValHE + totalValHEDom;
-        const dsr = subtotalHE * 0.16667;
-        const descFaltas = (salario / 30) * faltas;
-        const total_ = salario + subtotalHE + dsr - descFaltas;
-
-        document.getElementById('stat-he').textContent = decimalParaHHMM(totalHE + totalHEDom);
-        document.getElementById('stat-hn').textContent = decimalParaHHMM(totalHN);
-        document.getElementById('stat-dias').textContent = dias;
-        
-        if(temSalario && salario > 0) {
-            document.getElementById('stat-valor').textContent = 'R$ ' + total_.toFixed(2).replace('.',',');
-            document.getElementById('r-he-total').textContent = 'R$ ' + subtotalHE.toFixed(2).replace('.',',');
-            document.getElementById('r-salario').textContent = 'R$ ' + salario.toFixed(2).replace('.',',');
-            document.getElementById('r-val-he-sem').textContent = '+ R$ ' + totalValHE.toFixed(2).replace('.',',');
-            document.getElementById('r-val-he-dom').textContent = '+ R$ ' + totalValHEDom.toFixed(2).replace('.',',');
-            document.getElementById('r-dsr').textContent = '+ R$ ' + dsr.toFixed(2).replace('.',',');
-            document.getElementById('r-descontos').textContent = '- R$ ' + descFaltas.toFixed(2).replace('.',',');
-            document.getElementById('r-total').textContent = 'R$ ' + total_.toFixed(2).replace('.',',');
-        } else {
-            document.getElementById('stat-valor').textContent = 'R$ --';
-            document.getElementById('r-he-total').textContent = 'R$ --';
-            document.getElementById('r-salario').textContent = 'R$ --';
-            document.getElementById('r-val-he-sem').textContent = 'R$ --';
-            document.getElementById('r-val-he-dom').textContent = 'R$ --';
-            document.getElementById('r-dsr').textContent = 'R$ --';
-            document.getElementById('r-descontos').textContent = 'R$ --';
-            document.getElementById('r-total').textContent = 'R$ --';
-        }
-        
-        document.getElementById('r-he-semana').textContent = decimalParaHHMM(totalHE);
-        document.getElementById('r-he-dom').textContent = decimalParaHHMM(totalHEDom);
-        document.getElementById('r-uteis').textContent = uteis;
-        document.getElementById('r-sabados').textContent = sabados;
-        document.getElementById('r-domingos').textContent = domingos;
-        document.getElementById('r-faltas').textContent = faltas;
-        document.getElementById('r-atestados').textContent = atestados;
-    }
-
-    function renderDias(){
-        const lcs = getLancamentos();
-        const total = diasNoMes(mesAtual, anoAtual);
-        let html = '';
-        for(let d = 1; d <= total; d++){
-            const ds = diaSemana(d);
-            const nomeDia = DIAS_SEMANA[ds];
-            const cls = ds===0?'sunday':ds===6?'saturday':'';
-            const dados = lcs[d];
-            let infoHtml = '', heHtml = '';
-            if(dados){
-                const r = calcularHorasDia(dados, d);
-                if(dados.tipo === 'falta') infoHtml = '<span class="badge badge-falta">Falta</span>';
-                else if(dados.tipo === 'atestado') infoHtml = '<span class="badge badge-atestado">Atestado</span>';
-                else if(dados.tipo === 'feriado') infoHtml = '<span class="badge badge-feriado">Feriado trab.</span>';
-                else if(dados.tipo === 'folga') infoHtml = '<span class="badge badge-folga">Folga</span>';
-                else infoHtml = `<span class="badge-normal">${r.trabalhado.toFixed(1)}h trab.</span>`;
-                if(r.he > 0) heHtml = `<span class="day-he he-pos">+${decimalParaHHMM(r.he)}</span>`;
-                else if(r.hn > 0) heHtml = `<span class="day-he he-neg">-${decimalParaHHMM(r.hn)}</span>`;
-                else if(dados.tipo !== 'falta' && dados.tipo !== 'folga') heHtml = `<span class="day-he he-zero">✓</span>`;
-            } else {
-                infoHtml = `<span style="font-size:12px;color:var(--color-text-tertiary)">⏺ não lançado</span>`;
-            }
-            html += `<div class="day-row ${cls}" onclick="abrirModal(${d})">
-                        <div><div class="day-num">${d}</div><div class="day-name">${nomeDia}</div></div>
-                        <div class="day-info">${infoHtml}</div>
-                        <div>${heHtml || ''}</div>
-                        <div><button class="edit-btn" onclick="event.stopPropagation();abrirModal(${d})">✎</button></div>
-                    </div>`;
-        }
-        document.getElementById('lista-dias').innerHTML = html;
-    }
-
-    function abrirModal(dia){
-        editandoDia = dia;
-        const d = dia || 1;
-        const dataStr = `${anoAtual}-${String(mesAtual+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        document.getElementById('m-data').value = dataStr;
-        const lcs = getLancamentos();
-        const dados = dia && lcs[d];
-        if(dados){
-            document.getElementById('m-tipo').value = dados.tipo || 'normal';
-            document.getElementById('m-e1').value = dados.e1 || '08:00';
-            document.getElementById('m-s1').value = dados.s1 || '12:00';
-            document.getElementById('m-e2').value = dados.e2 || '13:00';
-            document.getElementById('m-s2').value = dados.s2 || '17:00';
-        } else {
-            document.getElementById('m-tipo').value = 'normal';
-            document.getElementById('m-e1').value = '08:00';
-            document.getElementById('m-s1').value = '12:00';
-            document.getElementById('m-e2').value = '13:00';
-            document.getElementById('m-s2').value = '17:00';
-        }
-        document.getElementById('modal-title').textContent = dia ? `✏️ Dia ${d} de ${MESES[mesAtual]}` : '📌 Novo lançamento';
-        atualizarCampos();
-        document.getElementById('modal').classList.remove('hidden');
-    }
-
-    function fecharModal(){ document.getElementById('modal').classList.add('hidden'); }
-    
-    function atualizarCampos(){
-        const tipo = document.getElementById('m-tipo').value;
-        const mostrar = (tipo === 'normal' || tipo === 'feriado');
-        document.getElementById('campos-horario').style.display = mostrar ? 'block' : 'none';
-    }
-    
-    function salvarDia(){
-        const dataVal = document.getElementById('m-data').value;
-        if(!dataVal) return;
-        const [y, m, d] = dataVal.split('-').map(Number);
-        if(y !== anoAtual || m-1 !== mesAtual) {
-            if(confirm(`A data é de ${MESES[m-1]}/${y}. Mudar para este mês?`)) {
-                anoAtual = y;
-                mesAtual = m-1;
-                atualizarLabelMes();
-            } else {
-                return;
-            }
-        }
-        const dia = d;
-        const tipo = document.getElementById('m-tipo').value;
-        const dados = {
-            tipo,
-            e1: document.getElementById('m-e1').value,
-            s1: document.getElementById('m-s1').value,
-            e2: document.getElementById('m-e2').value,
-            s2: document.getElementById('m-s2').value
-        };
-        setLancamento(dia, dados);
-        fecharModal();
-        renderDias();
-        recalcular();
-    }
-
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            const aba = tab.getAttribute('data-tab');
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
-            document.getElementById(`view-${aba}`).classList.add('active');
-        });
-    });
-
-    let editandoDia = null;
-    
-    carregarDados();
-    atualizarLabelMes();
-    renderDias();
-    recalcular();
-    
-    window.mudarMes = mudarMes;
-    window.abrirModal = abrirModal;
-    window.fecharModal = fecharModal;
-    window.salvarDia = salvarDia;
-    window.atualizarCampos = atualizarCampos;
-    window.salvarConfig = salvarConfig;
-    window.recalcular = recalcular;
-    window.formatarSalario = formatarSalario;
-
-    function mostrarToast(msg, erro) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.style.background = erro ? '#A32D2D' : '#1C1C1E';
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2800);
-    }
-
-    function exportarDados() {
-        const dados = {
-            versao: 1,
-            exportadoEm: new Date().toISOString(),
-            lancamentos: lancamentos,
-            salario: localStorage.getItem('meuPontoSalario') || '',
-            jornada: localStorage.getItem('meuPontoJornada') || '8'
-        };
-        const json = JSON.stringify(dados, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        const hoje = new Date().toISOString().slice(0, 10);
-        a.href = url;
-        a.download = `meu_ponto_backup_${hoje}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        mostrarToast('✅ Dados exportados com sucesso!');
-    }
-
-    function importarDados(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const dados = JSON.parse(e.target.result);
-                if (!dados.lancamentos) throw new Error('Arquivo inválido');
-                if (!confirm('Isso vai substituir todos os seus dados atuais. Continuar?')) {
-                    event.target.value = '';
-                    return;
-                }
-                lancamentos = dados.lancamentos;
-                salvarLancamentos();
-                if (dados.salario) {
-                    localStorage.setItem('meuPontoSalario', dados.salario);
-                    document.getElementById('salario').value = dados.salario;
-                }
-                if (dados.jornada) {
-                    localStorage.setItem('meuPontoJornada', dados.jornada);
-                    document.getElementById('jornada-semana').value = dados.jornada;
-                }
-                renderDias();
-                recalcular();
-                mostrarToast('✅ Dados importados com sucesso!');
-            } catch(err) {
-                mostrarToast('❌ Arquivo inválido ou corrompido.', true);
-            }
-            event.target.value = '';
-        };
-        reader.readAsText(file);
-    }
-
-    window.exportarDados = exportarDados;
-    window.importarDados = importarDados;
+// ---- INIT ----
+document.getElementById('mes-label').textContent=MESES[mesAtual].substring(0,3)+' '+anoAtual;
+renderDias();
+recalcular();
 </script>
 </body>
 </html>
