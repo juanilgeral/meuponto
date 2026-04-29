@@ -127,7 +127,7 @@
         .badge-folga { background: #F1EFE8; color: #5F5E5A; }
 
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
             backdrop-filter: blur(8px); display: flex; align-items: flex-end;
             justify-content: center; z-index: 1000;
         }
@@ -175,7 +175,6 @@
             <div style="font-size:13px;color:var(--color-text-tertiary);" id="mes-label"></div>
         </div>
 
-        <!-- Relógio e data -->
         <div style="background:var(--color-background-primary);border-radius:16px;padding:12px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;border:0.5px solid var(--color-border-tertiary);">
             <div>
                 <div id="clock-hhmm" style="font-size:36px;font-weight:700;letter-spacing:1px;font-family:monospace;"></div>
@@ -221,8 +220,8 @@
         <div class="section">
             <strong style="font-size:17px;">Horas Extras</strong>
             <div style="margin:12px 0;">
-                <div class="he-detail-row" style="display:flex;justify-content:space-between;padding:6px 0;"><span>HE dias úteis (50%)</span><span id="r-he-semana">0h 00m</span></div>
-                <div class="he-detail-row" style="display:flex;justify-content:space-between;padding:6px 0;"><span>HE dom/feriados (100%)</span><span id="r-he-dom">0h 00m</span></div>
+                <div style="display:flex;justify-content:space-between;padding:6px 0;"><span>HE dias úteis (50%)</span><span id="r-he-semana">0h 00m</span></div>
+                <div style="display:flex;justify-content:space-between;padding:6px 0;"><span>HE dom/feriados (100%)</span><span id="r-he-dom">0h 00m</span></div>
             </div>
             <div style="padding-top:12px;border-top:1px solid var(--color-border-tertiary);font-weight:600;color:var(--color-success);" id="r-he-total">Total HE bruto: R$ --</div>
         </div>
@@ -230,11 +229,11 @@
         <div class="section">
             <strong style="font-size:17px;">Pagamento Estimado</strong>
             <div style="margin-top:12px;">
-                <div class="resumo-row" style="display:flex;justify-content:space-between;padding:8px 0;"><span>Salário base</span><span id="r-salario">R$ --</span></div>
-                <div class="resumo-row" style="display:flex;justify-content:space-between;padding:8px 0;"><span>+ HE úteis</span><span id="r-val-he-sem" class="he-pos">R$ --</span></div>
-                <div class="resumo-row" style="display:flex;justify-content:space-between;padding:8px 0;"><span>+ HE dom/feriados</span><span id="r-val-he-dom" class="he-pos">R$ --</span></div>
-                <div class="resumo-row" style="display:flex;justify-content:space-between;padding:8px 0;"><span>+ DSR sobre HE</span><span id="r-dsr" class="he-pos">R$ --</span></div>
-                <div class="resumo-row" style="display:flex;justify-content:space-between;padding:8px 0;"><span>− Descontos (faltas)</span><span id="r-descontos" class="he-neg">R$ --</span></div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;"><span>Salário base</span><span id="r-salario">R$ --</span></div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;"><span>+ HE úteis</span><span id="r-val-he-sem" style="color:var(--color-success);">R$ --</span></div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;"><span>+ HE dom/feriados</span><span id="r-val-he-dom" style="color:var(--color-success);">R$ --</span></div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;"><span>+ DSR sobre HE</span><span id="r-dsr" style="color:var(--color-success);">R$ --</span></div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;"><span>− Descontos (faltas)</span><span id="r-descontos" style="color:var(--color-error);">R$ --</span></div>
                 <div style="margin-top:16px;padding-top:12px;border-top:2px solid var(--color-success);font-weight:700;font-size:18px;display:flex;justify-content:space-between;">
                     <span>Total Estimado</span>
                     <span id="r-total" style="color:var(--color-success);">R$ --</span>
@@ -278,53 +277,46 @@
         </div>
     </div>
 
-    <div class="footer" style="text-align:center;margin-top:30px;padding-top:20px;border-top:0.5px solid var(--color-border-tertiary);font-size:12px;color:var(--color-text-tertiary);">
-        <div style="font-weight:700;letter-spacing:1px;">LUEKSAM TECHNOLOGY</div>
-        <div style="margin-top:4px;">v4.1 — Cálculo CLT aprimorado + Feriados RJ</div>
-    </div>
-</div>
+    <!-- MODAL CORRIGIDO -->
+    <div id="modal" class="modal-overlay hidden">
+        <div class="modal" onclick="event.stopImmediatePropagation()">
+            <div style="font-size:20px;font-weight:600;margin-bottom:20px;" id="modal-title">Lançar Dia</div>
+            
+            <div style="margin-bottom:18px;">
+                <label style="display:block;margin-bottom:6px;font-weight:500;">Data</label>
+                <input type="date" id="m-data" style="width:100%;padding:12px;border-radius:12px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);">
+            </div>
 
-<!-- Modal -->
-<div id="modal" class="modal-overlay hidden">
-    <div class="modal">
-        <div style="font-size:20px;font-weight:600;margin-bottom:20px;" id="modal-title">Lançar Dia</div>
-        
-        <div style="margin-bottom:18px;">
-            <label>Data</label>
-            <input type="date" id="m-data" style="width:100%;padding:12px;border-radius:12px;border:0.5px solid var(--color-border-tertiary);">
-        </div>
+            <div style="margin-bottom:18px;">
+                <label style="display:block;margin-bottom:6px;font-weight:500;">Tipo de dia</label>
+                <select id="m-tipo" onchange="atualizarCampos()" style="width:100%;padding:12px;border-radius:12px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);">
+                    <option value="normal">Normal (horários)</option>
+                    <option value="feriado">Feriado trabalhado</option>
+                    <option value="falta">Falta</option>
+                    <option value="atestado">Atestado</option>
+                    <option value="folga">Folga / DSR</option>
+                </select>
+            </div>
 
-        <div style="margin-bottom:18px;">
-            <label>Tipo de dia</label>
-            <select id="m-tipo" onchange="atualizarCampos()" style="width:100%;padding:12px;border-radius:12px;border:0.5px solid var(--color-border-tertiary);">
-                <option value="normal">Normal (horários)</option>
-                <option value="feriado">Feriado trabalhado</option>
-                <option value="falta">Falta</option>
-                <option value="atestado">Atestado</option>
-                <option value="folga">Folga / DSR</option>
-            </select>
-        </div>
+            <div id="campos-horario">
+                <label style="display:block;margin-bottom:8px;font-weight:500;">Horários (Entrada → Saída almoço → Retorno → Saída)</label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <input type="time" id="m-e1" value="08:00">
+                    <input type="time" id="m-s1" value="12:00">
+                    <input type="time" id="m-e2" value="13:00">
+                    <input type="time" id="m-s2" value="17:00">
+                </div>
+            </div>
 
-        <div id="campos-horario">
-            <label>Horários (Entrada → Saída almoço → Retorno → Saída)</label>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
-                <input type="time" id="m-e1" value="08:00">
-                <input type="time" id="m-s1" value="12:00">
-                <input type="time" id="m-e2" value="13:00">
-                <input type="time" id="m-s2" value="17:00">
+            <div style="display:flex;gap:12px;margin-top:32px;">
+                <button class="btn-secondary" style="flex:1;padding:14px;" onclick="fecharModal()">Cancelar</button>
+                <button class="btn-primary" style="flex:1;padding:14px;" onclick="salvarDia()">Salvar Lançamento</button>
             </div>
         </div>
-
-        <div style="display:flex;gap:12px;margin-top:30px;">
-            <button class="btn-secondary" style="flex:1;" onclick="fecharModal()">Cancelar</button>
-            <button class="btn-primary" style="flex:1;" onclick="salvarDia()">Salvar Lançamento</button>
-        </div>
     </div>
-</div>
 
-<div id="toast" class="toast"></div>
-
-<script>
+    <div id="toast" class="toast"></div>
+    <script>
 // ==================== DADOS E CONFIGURAÇÕES ====================
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const DIAS_SEMANA = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
@@ -334,7 +326,7 @@ let anoAtual = new Date().getFullYear();
 let lancamentos = {};
 let editandoDia = null;
 
-// Feriados RJ + Nacionais 2026/2027 (pode expandir)
+// Feriados RJ + Nacionais 2026/2027
 const feriadosRJ = {
     2026: ["2026-01-01","2026-01-20","2026-02-17","2026-04-03","2026-04-21","2026-04-23","2026-05-01","2026-09-07","2026-10-12","2026-11-02","2026-11-15","2026-11-20","2026-12-25"],
     2027: ["2027-01-01","2027-01-20","2027-02-09","2027-02-10","2027-03-26","2027-04-21","2027-04-23","2027-05-01","2027-09-07","2027-10-12","2027-11-02","2027-11-15","2027-11-20","2027-12-25"]
@@ -346,7 +338,7 @@ function isFeriado(ano, mes, dia) {
     return anoF.includes(dataStr);
 }
 
-// ==================== FUNÇÕES DE CÁLCULO ====================
+// ==================== FUNÇÕES AUXILIARES ====================
 function converterSalarioParaNumero(v) {
     if (!v) return 0;
     let limpo = v.toString().replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.');
@@ -412,6 +404,7 @@ function calcularHorasDia(dados, dia) {
     return { trabalhado: hTrab, he, hn, valHe, ehDomFer: ehFeriado || ehDomingo, falta: false, atestado: false };
 }
 
+// ==================== RECÁLCULO E RENDER ====================
 function recalcular() {
     const lcs = lancamentos[`${anoAtual}-${mesAtual}`] || {};
     const totalDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
@@ -421,7 +414,6 @@ function recalcular() {
     let diasUteisTrabalhados = 0;
 
     const salario = converterSalarioParaNumero(document.getElementById('salario').value);
-    const valorHora = getValorHora();
 
     for (let d = 1; d <= totalDias; d++) {
         const dados = lcs[d];
@@ -437,7 +429,6 @@ function recalcular() {
         diasTrabalhados++;
         if (ds !== 0 && !isFeriado(anoAtual, mesAtual, d)) {
             diasUteisTrabalhados++;
-            uteis++;
         }
 
         if (r.ehDomFer) {
@@ -453,21 +444,17 @@ function recalcular() {
     const subtotalHE = totalValHE + totalValHEDom;
     let dsr = 0;
     if (diasUteisTrabalhados > 0) {
-        const mediaDiariaHE = subtotalHE / diasUteisTrabalhados;
-        const numDSR = 4 + (totalDias - diasUteisTrabalhados - faltas - atestados); // aproximação de domingos + feriados
-        dsr = mediaDiariaHE * numDSR * 0.1667; // simplificação conservadora
+        dsr = (subtotalHE / diasUteisTrabalhados) * 5; // aproximação conservadora de DSR
     }
 
     const descFaltas = (salario / 30) * faltas;
     const totalReceber = salario + subtotalHE + dsr - descFaltas;
 
-    // Atualiza estatísticas
     document.getElementById('stat-he').textContent = decimalParaHHMM(totalHE + totalHEDom);
     document.getElementById('stat-hn').textContent = decimalParaHHMM(totalHN);
     document.getElementById('stat-dias').textContent = diasTrabalhados;
     document.getElementById('stat-valor').textContent = salario > 0 ? 'R$ ' + totalReceber.toFixed(2).replace('.', ',') : 'R$ --';
 
-    // Resumo detalhado
     document.getElementById('r-he-semana').textContent = decimalParaHHMM(totalHE);
     document.getElementById('r-he-dom').textContent = decimalParaHHMM(totalHEDom);
     document.getElementById('r-he-total').textContent = `Total HE bruto: R$ ${subtotalHE.toFixed(2).replace('.', ',')}`;
@@ -518,11 +505,12 @@ function renderDias() {
     document.getElementById('lista-dias').innerHTML = html;
 }
 
-// ==================== MODAL E PERSISTÊNCIA ====================
+// ==================== MODAL (VERSÃO CORRIGIDA) ====================
 function abrirModal(dia) {
     editandoDia = dia;
     const d = dia || 1;
     const dataStr = `${anoAtual}-${String(mesAtual+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    
     document.getElementById('m-data').value = dataStr;
 
     const lcs = lancamentos[`${anoAtual}-${mesAtual}`] || {};
@@ -536,16 +524,22 @@ function abrirModal(dia) {
         document.getElementById('m-s2').value = dados.s2 || '17:00';
     } else {
         document.getElementById('m-tipo').value = 'normal';
-        ['m-e1','m-s1','m-e2','m-s2'].forEach(id => document.getElementById(id).value = id.includes('e') ? '08:00' : id.includes('s1') ? '12:00' : '17:00');
+        document.getElementById('m-e1').value = '08:00';
+        document.getElementById('m-s1').value = '12:00';
+        document.getElementById('m-e2').value = '13:00';
+        document.getElementById('m-s2').value = '17:00';
     }
 
     document.getElementById('modal-title').textContent = dia ? `Editar Dia ${d}` : 'Novo Lançamento';
     atualizarCampos();
+    
     document.getElementById('modal').classList.remove('hidden');
 }
 
 function fecharModal() {
-    document.getElementById('modal').classList.add('hidden');
+    const modal = document.getElementById('modal');
+    modal.classList.add('hidden');
+    void modal.offsetWidth; // força reflow
 }
 
 function atualizarCampos() {
@@ -555,11 +549,17 @@ function atualizarCampos() {
 
 function salvarDia() {
     const dataVal = document.getElementById('m-data').value;
-    if (!dataVal) return;
+    if (!dataVal) {
+        mostrarToast('Selecione uma data', true);
+        return;
+    }
+
     const [y, m, d] = dataVal.split('-').map(Number);
-    if (y !== anoAtual || m-1 !== mesAtual) {
-        if (!confirm(`Data de outro mês. Mudar para ${MESES[m-1]} ${y}?`)) return;
-        anoAtual = y; mesAtual = m-1;
+    if (y !== anoAtual || (m-1) !== mesAtual) {
+        if (!confirm(`A data pertence a ${MESES[m-1]} ${y}. Mudar o mês atual?`)) return;
+        anoAtual = y;
+        mesAtual = m - 1;
+        document.getElementById('mes-label').textContent = `${MESES[mesAtual]} ${anoAtual}`;
     }
 
     const chaveMes = `${anoAtual}-${mesAtual}`;
@@ -577,8 +577,10 @@ function salvarDia() {
     fecharModal();
     renderDias();
     recalcular();
+    mostrarToast('✅ Lançamento salvo com sucesso!');
 }
 
+// ==================== PERSISTÊNCIA ====================
 function salvarLancamentos() {
     localStorage.setItem('meuPontoApp', JSON.stringify(lancamentos));
 }
@@ -587,7 +589,6 @@ function carregarDados() {
     const saved = localStorage.getItem('meuPontoApp');
     if (saved) lancamentos = JSON.parse(saved);
 
-    // Carregar configs
     const salarioSalvo = localStorage.getItem('meuPontoSalario');
     if (salarioSalvo) document.getElementById('salario').value = salarioSalvo;
 
@@ -650,8 +651,8 @@ function importarDados(e) {
                 if (dados.salario) document.getElementById('salario').value = dados.salario;
                 if (dados.configs) {
                     Object.keys(dados.configs).forEach(k => {
-                        const el = document.getElementById(k === 'jornadaSemana' ? 'jornada-semana' : 
-                                   k === 'jornadaSabado' ? 'jornada-sabado' : k === 'adicionalHE' ? 'adicional-he' : k);
+                        const idMap = { jornadaSemana: 'jornada-semana', jornadaSabado: 'jornada-sabado', adicionalHE: 'adicional-he' };
+                        const el = document.getElementById(idMap[k] || k);
                         if (el) el.value = dados.configs[k];
                     });
                 }
@@ -669,26 +670,15 @@ function importarDados(e) {
     reader.readAsText(file);
 }
 
-// ==================== TOAST E INICIALIZAÇÃO ====================
+// ==================== TOAST E RELÓGIO ====================
 function mostrarToast(msg, erro = false) {
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.style.background = erro ? '#A32D2D' : '#1C1C1E';
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+    setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-// Tabs
-document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
-        document.getElementById('view-' + tab.getAttribute('data-tab')).classList.add('active');
-    });
-});
-
-// Relógio em tempo real
 function atualizarRelogio() {
     const agora = new Date();
     const hh = String(agora.getHours()).padStart(2,'0');
@@ -702,10 +692,20 @@ function atualizarRelogio() {
     document.getElementById('date-weekday').textContent = dias[agora.getDay()];
     document.getElementById('date-full').textContent = `${agora.getDate()} de ${MESES[agora.getMonth()]} de ${agora.getFullYear()}`;
 }
+
+// ==================== INICIALIZAÇÃO ====================
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
+        document.getElementById('view-' + tab.getAttribute('data-tab')).classList.add('active');
+    });
+});
+
 setInterval(atualizarRelogio, 1000);
 atualizarRelogio();
 
-// Inicialização
 carregarDados();
 document.getElementById('mes-label').textContent = `${MESES[mesAtual]} ${anoAtual}`;
 renderDias();
