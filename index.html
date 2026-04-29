@@ -126,19 +126,76 @@
         .badge-atestado { background: #FAEEDA; color: #BA7517; }
         .badge-folga { background: #F1EFE8; color: #5F5E5A; }
 
+        /* ===== MODAL ===== */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.6);
             backdrop-filter: blur(8px); display: flex; align-items: flex-end;
             justify-content: center; z-index: 1000;
         }
+        .modal-overlay.hidden { display: none; }
         .modal {
             background: var(--color-background-primary);
             border-radius: 28px 28px 0 0;
             width: 100%; max-width: 500px;
             padding: 24px 20px 40px;
             animation: slideUp 0.3s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        /* ===== SELECT/INPUT STYLE ===== */
+        select, input[type="number"], input[type="time"], input[type="text"] {
+            font-family: var(--font-sans);
+            font-size: 16px; /* 16px prevents iOS zoom */
+            color: var(--color-text-primary);
+            background: var(--color-background-secondary);
+            border: 0.5px solid var(--color-border-tertiary);
+            border-radius: 12px;
+            padding: 12px;
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238E8E93' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        /* ===== DIA SELECTOR (grade de botões) ===== */
+        .dia-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .dia-btn {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 10px;
+            background: var(--color-background-secondary);
+            color: var(--color-text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+        .dia-btn:active { background: var(--color-background-tertiary); }
+        .dia-btn.selected {
+            background: var(--color-text-primary);
+            color: var(--color-background-primary);
+        }
+        .dia-btn.domingo { color: #E5484D; }
+        .dia-btn.sabado { color: #3B82F6; }
+        .dia-btn.domingo.selected, .dia-btn.sabado.selected {
+            background: var(--color-text-primary);
+            color: var(--color-background-primary);
+        }
 
         .btn-primary {
             background: var(--color-text-primary);
@@ -148,6 +205,8 @@
             padding: 14px;
             font-weight: 600;
             font-size: 17px;
+            width: 100%;
+            cursor: pointer;
         }
         .btn-secondary {
             background: var(--color-background-tertiary);
@@ -156,13 +215,32 @@
             border-radius: 40px;
             padding: 14px;
             font-weight: 500;
+            width: 100%;
+            cursor: pointer;
         }
+
+        /* time inputs em grid */
+        .time-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .time-grid input[type="time"] {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 14px 10px;
+        }
+
+        .section-view { display: none; }
+        .section-view.active { display: block; }
+
         .toast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             background: #1C1C1E; color: #fff; padding: 12px 24px;
             border-radius: 30px; font-size: 14.5px; font-weight: 500;
             opacity: 0; pointer-events: none; transition: all 0.3s ease;
-            z-index: 9999;
+            z-index: 9999; white-space: nowrap;
         }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
     </style>
@@ -187,8 +265,8 @@
         </div>
 
         <div style="display:flex;gap:12px;">
-            <button class="btn-secondary" onclick="mudarMes(-1)" style="width:44px;height:44px;border-radius:50%;font-size:20px;">‹</button>
-            <button class="btn-secondary" onclick="mudarMes(1)" style="width:44px;height:44px;border-radius:50%;font-size:20px;">›</button>
+            <button class="btn-secondary" onclick="mudarMes(-1)" style="width:44px;height:44px;border-radius:50%;font-size:20px;padding:0;">‹</button>
+            <button class="btn-secondary" onclick="mudarMes(1)" style="width:44px;height:44px;border-radius:50%;font-size:20px;padding:0;">›</button>
         </div>
     </div>
 
@@ -197,7 +275,8 @@
         <button class="tab" data-tab="resumo">📊 Resumo</button>
         <button class="tab" data-tab="config">⚙️ Config</button>
     </div>
-        <!-- View Lançamentos -->
+
+    <!-- View Lançamentos -->
     <div id="view-lancamentos" class="section-view active">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
             <div class="stat-card"><div class="stat-label">Horas Extras</div><div class="stat-val green" id="stat-he">0h 00m</div></div>
@@ -209,7 +288,7 @@
         <div class="section">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                 <strong>Dias do mês</strong>
-                <button class="btn-primary" style="padding:8px 20px;font-size:14px;" onclick="abrirModal(null)">+ Novo Lançamento</button>
+                <button class="btn-primary" style="width:auto;padding:8px 20px;font-size:14px;" onclick="abrirModal(null)">+ Novo</button>
             </div>
             <div id="lista-dias"></div>
         </div>
@@ -246,50 +325,51 @@
     <div id="view-config" class="section-view">
         <div class="section">
             <label style="display:block;margin-bottom:6px;font-weight:500;">Salário mensal (R$)</label>
-            <input type="text" id="salario" placeholder="Ex: 3626,88" style="width:100%;padding:12px;border-radius:12px;border:0.5px solid var(--color-border-tertiary);" oninput="formatarSalario(this)" onchange="salvarConfig()">
+            <input type="text" id="salario" placeholder="Ex: 3626,88" oninput="formatarSalario(this)" onchange="salvarConfig()">
             
             <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                 <div>
                     <label style="display:block;margin-bottom:6px;font-weight:500;">Jornada seg-sex (h)</label>
-                    <input type="number" id="jornada-semana" value="8" step="0.5" style="width:100%;padding:12px;border-radius:12px;border:0.5px solid var(--color-border-tertiary);" onchange="salvarConfig()">
+                    <input type="number" id="jornada-semana" value="8" step="0.5" onchange="salvarConfig()">
                 </div>
                 <div>
                     <label style="display:block;margin-bottom:6px;font-weight:500;">Jornada sábado (h)</label>
-                    <input type="number" id="jornada-sabado" value="4" step="0.5" style="width:100%;padding:12px;border-radius:12px;border:0.5px solid var(--color-border-tertiary);" onchange="salvarConfig()">
+                    <input type="number" id="jornada-sabado" value="4" step="0.5" onchange="salvarConfig()">
                 </div>
             </div>
 
             <div style="margin-top:16px;">
                 <label style="display:block;margin-bottom:6px;font-weight:500;">Divisor mensal (padrão CLT)</label>
-                <input type="number" id="divisor" value="220" style="width:100%;padding:12px;border-radius:12px;border:0.5px solid var(--color-border-tertiary);" onchange="salvarConfig()">
+                <input type="number" id="divisor" value="220" onchange="salvarConfig()">
             </div>
 
             <div style="margin-top:16px;">
                 <label style="display:block;margin-bottom:6px;font-weight:500;">Adicional HE dias úteis (%)</label>
-                <input type="number" id="adicional-he" value="50" style="width:100%;padding:12px;border-radius:12px;border:0.5px solid var(--color-border-tertiary);" onchange="salvarConfig()">
+                <input type="number" id="adicional-he" value="50" onchange="salvarConfig()">
             </div>
         </div>
 
-        <div style="text-align:center;margin-top:20px;">
-            <button onclick="exportarDados()" class="btn-secondary" style="margin:0 6px;">Exportar Backup</button>
-            <button onclick="document.getElementById('input-importar').click()" class="btn-primary" style="margin:0 6px;">Importar Backup</button>
+        <div style="text-align:center;margin-top:20px;display:flex;gap:12px;">
+            <button onclick="exportarDados()" class="btn-secondary">Exportar Backup</button>
+            <button onclick="document.getElementById('input-importar').click()" class="btn-primary">Importar Backup</button>
             <input type="file" id="input-importar" accept=".json" style="display:none" onchange="importarDados(event)">
         </div>
     </div>
 
-    <!-- MODAL CORRIGIDO -->
+    <!-- ===== MODAL CORRIGIDO ===== -->
     <div id="modal" class="modal-overlay hidden">
-        <div class="modal" onclick="event.stopImmediatePropagation()">
+        <div class="modal" onclick="event.stopPropagation()">
             <div style="font-size:20px;font-weight:600;margin-bottom:20px;" id="modal-title">Lançar Dia</div>
-            
+
+            <!-- SELETOR DE DIA: grade numérica simples, sem input type=date -->
             <div style="margin-bottom:18px;">
-                <label style="display:block;margin-bottom:6px;font-weight:500;">Data</label>
-                <input type="date" id="m-data" style="width:100%;padding:12px;border-radius:12px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);">
+                <label style="display:block;margin-bottom:8px;font-weight:500;">Dia do mês — <span id="label-mes-modal"></span></label>
+                <div class="dia-grid" id="dia-grid"></div>
             </div>
 
             <div style="margin-bottom:18px;">
                 <label style="display:block;margin-bottom:6px;font-weight:500;">Tipo de dia</label>
-                <select id="m-tipo" onchange="atualizarCampos()" style="width:100%;padding:12px;border-radius:12px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);">
+                <select id="m-tipo" onchange="atualizarCampos()">
                     <option value="normal">Normal (horários)</option>
                     <option value="feriado">Feriado trabalhado</option>
                     <option value="falta">Falta</option>
@@ -299,34 +379,44 @@
             </div>
 
             <div id="campos-horario">
-                <label style="display:block;margin-bottom:8px;font-weight:500;">Horários (Entrada → Saída almoço → Retorno → Saída)</label>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <label style="display:block;margin-bottom:8px;font-weight:500;">Horários</label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px;">
+                    <span style="font-size:12px;color:var(--color-text-tertiary);text-align:center;">Entrada</span>
+                    <span style="font-size:12px;color:var(--color-text-tertiary);text-align:center;">Saída almoço</span>
+                </div>
+                <div class="time-grid" style="margin-bottom:10px;">
                     <input type="time" id="m-e1" value="08:00">
                     <input type="time" id="m-s1" value="12:00">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px;">
+                    <span style="font-size:12px;color:var(--color-text-tertiary);text-align:center;">Retorno</span>
+                    <span style="font-size:12px;color:var(--color-text-tertiary);text-align:center;">Saída</span>
+                </div>
+                <div class="time-grid">
                     <input type="time" id="m-e2" value="13:00">
                     <input type="time" id="m-s2" value="17:00">
                 </div>
             </div>
 
             <div style="display:flex;gap:12px;margin-top:32px;">
-                <button class="btn-secondary" style="flex:1;padding:14px;" onclick="fecharModal()">Cancelar</button>
-                <button class="btn-primary" style="flex:1;padding:14px;" onclick="salvarDia()">Salvar Lançamento</button>
+                <button class="btn-secondary" style="flex:1;" onclick="fecharModal()">Cancelar</button>
+                <button class="btn-primary" style="flex:1;" onclick="salvarDia()">Salvar</button>
             </div>
         </div>
     </div>
 
     <div id="toast" class="toast"></div>
-    <script>
-// ==================== DADOS E CONFIGURAÇÕES ====================
+</div>
+
+<script>
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const DIAS_SEMANA = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 
 let mesAtual = new Date().getMonth();
 let anoAtual = new Date().getFullYear();
 let lancamentos = {};
-let editandoDia = null;
+let diaSelecionado = null; // dia numérico selecionado no modal
 
-// Feriados RJ + Nacionais 2026/2027
 const feriadosRJ = {
     2026: ["2026-01-01","2026-01-20","2026-02-17","2026-04-03","2026-04-21","2026-04-23","2026-05-01","2026-09-07","2026-10-12","2026-11-02","2026-11-15","2026-11-20","2026-12-25"],
     2027: ["2027-01-01","2027-01-20","2027-02-09","2027-02-10","2027-03-26","2027-04-21","2027-04-23","2027-05-01","2027-09-07","2027-10-12","2027-11-02","2027-11-15","2027-11-20","2027-12-25"]
@@ -338,7 +428,6 @@ function isFeriado(ano, mes, dia) {
     return anoF.includes(dataStr);
 }
 
-// ==================== FUNÇÕES AUXILIARES ====================
 function converterSalarioParaNumero(v) {
     if (!v) return 0;
     let limpo = v.toString().replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.');
@@ -404,14 +493,12 @@ function calcularHorasDia(dados, dia) {
     return { trabalhado: hTrab, he, hn, valHe, ehDomFer: ehFeriado || ehDomingo, falta: false, atestado: false };
 }
 
-// ==================== RECÁLCULO E RENDER ====================
 function recalcular() {
     const lcs = lancamentos[`${anoAtual}-${mesAtual}`] || {};
     const totalDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
     
     let totalHE = 0, totalHEDom = 0, totalHN = 0, totalValHE = 0, totalValHEDom = 0;
-    let diasTrabalhados = 0, uteis = 0, faltas = 0, atestados = 0;
-    let diasUteisTrabalhados = 0;
+    let diasTrabalhados = 0, faltas = 0, diasUteisTrabalhados = 0;
 
     const salario = converterSalarioParaNumero(document.getElementById('salario').value);
 
@@ -423,13 +510,11 @@ function recalcular() {
         const ds = new Date(anoAtual, mesAtual, d).getDay();
 
         if (r.falta) { faltas++; continue; }
-        if (r.atestado) { atestados++; continue; }
+        if (r.atestado) continue;
         if (dados.tipo === 'folga') continue;
 
         diasTrabalhados++;
-        if (ds !== 0 && !isFeriado(anoAtual, mesAtual, d)) {
-            diasUteisTrabalhados++;
-        }
+        if (ds !== 0 && !isFeriado(anoAtual, mesAtual, d)) diasUteisTrabalhados++;
 
         if (r.ehDomFer) {
             totalHEDom += r.he;
@@ -443,9 +528,7 @@ function recalcular() {
 
     const subtotalHE = totalValHE + totalValHEDom;
     let dsr = 0;
-    if (diasUteisTrabalhados > 0) {
-        dsr = (subtotalHE / diasUteisTrabalhados) * 5; // aproximação conservadora de DSR
-    }
+    if (diasUteisTrabalhados > 0) dsr = (subtotalHE / diasUteisTrabalhados) * 5;
 
     const descFaltas = (salario / 30) * faltas;
     const totalReceber = salario + subtotalHE + dsr - descFaltas;
@@ -505,13 +588,42 @@ function renderDias() {
     document.getElementById('lista-dias').innerHTML = html;
 }
 
-// ==================== MODAL (VERSÃO CORRIGIDA) ====================
+// ===== GRADE DE DIAS NO MODAL =====
+function renderDiaGrid(diaSel) {
+    const totalDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
+    const grid = document.getElementById('dia-grid');
+    grid.innerHTML = '';
+
+    for (let d = 1; d <= totalDias; d++) {
+        const ds = new Date(anoAtual, mesAtual, d).getDay();
+        const clsCor = ds === 0 ? 'domingo' : ds === 6 ? 'sabado' : '';
+        const clsSel = d === diaSel ? 'selected' : '';
+        const btn = document.createElement('button');
+        btn.className = `dia-btn ${clsCor} ${clsSel}`;
+        btn.textContent = d;
+        btn.type = 'button';
+        btn.onclick = () => selecionarDia(d);
+        grid.appendChild(btn);
+    }
+}
+
+function selecionarDia(d) {
+    diaSelecionado = d;
+    // atualiza highlight
+    document.querySelectorAll('.dia-btn').forEach(btn => {
+        btn.classList.toggle('selected', parseInt(btn.textContent) === d);
+    });
+}
+
+// ===== MODAL =====
 function abrirModal(dia) {
-    editandoDia = dia;
-    const d = dia || 1;
-    const dataStr = `${anoAtual}-${String(mesAtual+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    
-    document.getElementById('m-data').value = dataStr;
+    diaSelecionado = dia || new Date().getDate();
+    // clamp ao mês
+    const totalDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
+    if (diaSelecionado > totalDias) diaSelecionado = 1;
+
+    document.getElementById('label-mes-modal').textContent = `${MESES[mesAtual]} ${anoAtual}`;
+    renderDiaGrid(diaSelecionado);
 
     const lcs = lancamentos[`${anoAtual}-${mesAtual}`] || {};
     const dados = dia ? lcs[dia] : null;
@@ -530,16 +642,13 @@ function abrirModal(dia) {
         document.getElementById('m-s2').value = '17:00';
     }
 
-    document.getElementById('modal-title').textContent = dia ? `Editar Dia ${d}` : 'Novo Lançamento';
+    document.getElementById('modal-title').textContent = dia ? `Editar Dia ${dia}` : 'Novo Lançamento';
     atualizarCampos();
-    
     document.getElementById('modal').classList.remove('hidden');
 }
 
 function fecharModal() {
-    const modal = document.getElementById('modal');
-    modal.classList.add('hidden');
-    void modal.offsetWidth; // força reflow
+    document.getElementById('modal').classList.add('hidden');
 }
 
 function atualizarCampos() {
@@ -548,24 +657,15 @@ function atualizarCampos() {
 }
 
 function salvarDia() {
-    const dataVal = document.getElementById('m-data').value;
-    if (!dataVal) {
-        mostrarToast('Selecione uma data', true);
+    if (!diaSelecionado) {
+        mostrarToast('Selecione um dia', true);
         return;
-    }
-
-    const [y, m, d] = dataVal.split('-').map(Number);
-    if (y !== anoAtual || (m-1) !== mesAtual) {
-        if (!confirm(`A data pertence a ${MESES[m-1]} ${y}. Mudar o mês atual?`)) return;
-        anoAtual = y;
-        mesAtual = m - 1;
-        document.getElementById('mes-label').textContent = `${MESES[mesAtual]} ${anoAtual}`;
     }
 
     const chaveMes = `${anoAtual}-${mesAtual}`;
     if (!lancamentos[chaveMes]) lancamentos[chaveMes] = {};
 
-    lancamentos[chaveMes][d] = {
+    lancamentos[chaveMes][diaSelecionado] = {
         tipo: document.getElementById('m-tipo').value,
         e1: document.getElementById('m-e1').value,
         s1: document.getElementById('m-s1').value,
@@ -577,33 +677,34 @@ function salvarDia() {
     fecharModal();
     renderDias();
     recalcular();
-    mostrarToast('✅ Lançamento salvo com sucesso!');
+    mostrarToast('✅ Lançamento salvo!');
 }
 
-// ==================== PERSISTÊNCIA ====================
+// ===== PERSISTÊNCIA =====
 function salvarLancamentos() {
-    localStorage.setItem('meuPontoApp', JSON.stringify(lancamentos));
+    try { localStorage.setItem('meuPontoApp', JSON.stringify(lancamentos)); } catch(e) {}
 }
 
 function carregarDados() {
-    const saved = localStorage.getItem('meuPontoApp');
-    if (saved) lancamentos = JSON.parse(saved);
-
-    const salarioSalvo = localStorage.getItem('meuPontoSalario');
-    if (salarioSalvo) document.getElementById('salario').value = salarioSalvo;
-
-    const configs = ['jornada-semana','jornada-sabado','divisor','adicional-he'];
-    configs.forEach(id => {
-        const val = localStorage.getItem('meuPonto_' + id);
-        if (val) document.getElementById(id).value = val;
-    });
+    try {
+        const saved = localStorage.getItem('meuPontoApp');
+        if (saved) lancamentos = JSON.parse(saved);
+        const salarioSalvo = localStorage.getItem('meuPontoSalario');
+        if (salarioSalvo) document.getElementById('salario').value = salarioSalvo;
+        ['jornada-semana','jornada-sabado','divisor','adicional-he'].forEach(id => {
+            const val = localStorage.getItem('meuPonto_' + id);
+            if (val) document.getElementById(id).value = val;
+        });
+    } catch(e) {}
 }
 
 function salvarConfig() {
-    localStorage.setItem('meuPontoSalario', document.getElementById('salario').value);
-    ['jornada-semana','jornada-sabado','divisor','adicional-he'].forEach(id => {
-        localStorage.setItem('meuPonto_' + id, document.getElementById(id).value);
-    });
+    try {
+        localStorage.setItem('meuPontoSalario', document.getElementById('salario').value);
+        ['jornada-semana','jornada-sabado','divisor','adicional-he'].forEach(id => {
+            localStorage.setItem('meuPonto_' + id, document.getElementById(id).value);
+        });
+    } catch(e) {}
     recalcular();
 }
 
@@ -616,10 +717,10 @@ function mudarMes(dir) {
     recalcular();
 }
 
-// ==================== EXPORT / IMPORT ====================
+// ===== EXPORT / IMPORT =====
 function exportarDados() {
     const dados = {
-        versao: 4.1,
+        versao: 4.2,
         exportadoEm: new Date().toISOString(),
         lancamentos,
         salario: document.getElementById('salario').value,
@@ -636,7 +737,7 @@ function exportarDados() {
     a.href = url;
     a.download = `meu_ponto_${new Date().toISOString().slice(0,10)}.json`;
     a.click();
-    mostrarToast('✅ Backup exportado com sucesso!');
+    mostrarToast('✅ Backup exportado!');
 }
 
 function importarDados(e) {
@@ -650,8 +751,8 @@ function importarDados(e) {
                 lancamentos = dados.lancamentos || {};
                 if (dados.salario) document.getElementById('salario').value = dados.salario;
                 if (dados.configs) {
+                    const idMap = { jornadaSemana: 'jornada-semana', jornadaSabado: 'jornada-sabado', adicionalHE: 'adicional-he' };
                     Object.keys(dados.configs).forEach(k => {
-                        const idMap = { jornadaSemana: 'jornada-semana', jornadaSabado: 'jornada-sabado', adicionalHE: 'adicional-he' };
                         const el = document.getElementById(idMap[k] || k);
                         if (el) el.value = dados.configs[k];
                     });
@@ -660,7 +761,7 @@ function importarDados(e) {
                 salvarConfig();
                 renderDias();
                 recalcular();
-                mostrarToast('✅ Dados importados com sucesso!');
+                mostrarToast('✅ Dados importados!');
             }
         } catch(err) {
             mostrarToast('❌ Erro ao importar arquivo', true);
@@ -670,7 +771,7 @@ function importarDados(e) {
     reader.readAsText(file);
 }
 
-// ==================== TOAST E RELÓGIO ====================
+// ===== TOAST E RELÓGIO =====
 function mostrarToast(msg, erro = false) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -684,16 +785,14 @@ function atualizarRelogio() {
     const hh = String(agora.getHours()).padStart(2,'0');
     const mm = String(agora.getMinutes()).padStart(2,'0');
     const ss = String(agora.getSeconds()).padStart(2,'0');
-    
     document.getElementById('clock-hhmm').textContent = `${hh}:${mm}`;
     document.getElementById('clock-ss').textContent = `:${ss}`;
-    
     const dias = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
     document.getElementById('date-weekday').textContent = dias[agora.getDay()];
     document.getElementById('date-full').textContent = `${agora.getDate()} de ${MESES[agora.getMonth()]} de ${agora.getFullYear()}`;
 }
 
-// ==================== INICIALIZAÇÃO ====================
+// ===== INICIALIZAÇÃO =====
 document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -703,15 +802,17 @@ document.querySelectorAll('.tab').forEach(tab => {
     });
 });
 
+// Fechar modal clicando no overlay
+document.getElementById('modal').addEventListener('click', fecharModal);
+
 setInterval(atualizarRelogio, 1000);
 atualizarRelogio();
-
 carregarDados();
 document.getElementById('mes-label').textContent = `${MESES[mesAtual]} ${anoAtual}`;
 renderDias();
 recalcular();
 
-// Expor funções globais
+// Expor globais
 window.mudarMes = mudarMes;
 window.abrirModal = abrirModal;
 window.fecharModal = fecharModal;
