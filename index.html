@@ -125,6 +125,7 @@
         .badge-falta { background: #FCEBEB; color: #A32D2D; }
         .badge-atestado { background: #FAEEDA; color: #BA7517; }
         .badge-folga { background: #F1EFE8; color: #5F5E5A; }
+        .badge-ferias { background: #E7F6EC; color: #1E7A3D; }
 
         /* ===== MODAL ===== */
         .modal-overlay {
@@ -375,6 +376,7 @@
                     <option value="falta">Falta</option>
                     <option value="atestado">Atestado</option>
                     <option value="folga">Folga / DSR</option>
+                    <option value="ferias">Férias</option>
                 </select>
             </div>
 
@@ -465,8 +467,8 @@ function calcularHorasDia(dados, dia) {
     const jornadaSabado = parseFloat(document.getElementById('jornada-sabado').value) || 4;
     const adicionalHE = parseFloat(document.getElementById('adicional-he').value) || 50;
 
-    if (dados.tipo === 'folga' || dados.tipo === 'falta' || dados.tipo === 'atestado') {
-        return { trabalhado: 0, he: 0, hn: 0, valHe: 0, ehDomFer: ehDomingo || ehFeriado, falta: dados.tipo==='falta', atestado: dados.tipo==='atestado' };
+    if (dados.tipo === 'folga' || dados.tipo === 'falta' || dados.tipo === 'atestado' || dados.tipo === 'ferias') {
+        return { trabalhado: 0, he: 0, hn: 0, valHe: 0, ehDomFer: ehDomingo || ehFeriado, falta: dados.tipo==='falta', atestado: dados.tipo==='atestado', ferias: dados.tipo==='ferias' };
     }
 
     const e1 = horaParaDecimal(dados.e1);
@@ -512,6 +514,7 @@ function recalcular() {
         if (r.falta) { faltas++; continue; }
         if (r.atestado) continue;
         if (dados.tipo === 'folga') continue;
+        if (dados.tipo === 'ferias') continue;
 
         diasTrabalhados++;
         if (ds !== 0 && !isFeriado(anoAtual, mesAtual, d)) diasUteisTrabalhados++;
@@ -569,6 +572,7 @@ function renderDias() {
             else if (dados.tipo === 'atestado') info = '<span class="badge badge-atestado">Atestado</span>';
             else if (dados.tipo === 'feriado' || isFeriado(anoAtual, mesAtual, d)) info = '<span class="badge badge-feriado">Feriado</span>';
             else if (dados.tipo === 'folga') info = '<span class="badge badge-folga">Folga</span>';
+            else if (dados.tipo === 'ferias') info = '<span class="badge badge-ferias">Férias</span>';
             else info = `<span style="font-size:12.5px;color:var(--color-text-secondary)">${r.trabalhado.toFixed(1)}h</span>`;
 
             if (r.he > 0) heHtml = `<span style="color:#2C9E7A;font-weight:600;">+${decimalParaHHMM(r.he)}</span>`;
