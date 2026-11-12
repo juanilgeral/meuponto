@@ -351,6 +351,69 @@
             </div>
         </div>
 
+        <!-- Horário Padrão -->
+        <div class="section" style="margin-top:16px;">
+            <strong style="font-size:17px;display:block;margin-bottom:12px;">Horário Padrão (Seg–Sáb)</strong>
+            <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:16px;">
+                Defina o horário normal de trabalho. Depois use o botão para preencher automaticamente os dias de segunda a sábado do mês atual que ainda não foram lançados.
+            </p>
+
+            <div style="margin-bottom:16px;">
+                <label style="display:block;margin-bottom:8px;font-weight:500;">Segunda a Sexta</label>
+                <div class="time-grid" style="margin-bottom:8px;">
+                    <div>
+                        <span style="font-size:12px;color:var(--color-text-tertiary);display:block;text-align:center;margin-bottom:4px;">Entrada</span>
+                        <input type="time" id="padrao-sem-e1" value="08:00" onchange="salvarConfig()">
+                    </div>
+                    <div>
+                        <span style="font-size:12px;color:var(--color-text-tertiary);display:block;text-align:center;margin-bottom:4px;">Saída almoço</span>
+                        <input type="time" id="padrao-sem-s1" value="12:00" onchange="salvarConfig()">
+                    </div>
+                </div>
+                <div class="time-grid">
+                    <div>
+                        <span style="font-size:12px;color:var(--color-text-tertiary);display:block;text-align:center;margin-bottom:4px;">Retorno</span>
+                        <input type="time" id="padrao-sem-e2" value="13:00" onchange="salvarConfig()">
+                    </div>
+                    <div>
+                        <span style="font-size:12px;color:var(--color-text-tertiary);display:block;text-align:center;margin-bottom:4px;">Saída</span>
+                        <input type="time" id="padrao-sem-s2" value="17:00" onchange="salvarConfig()">
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:16px;">
+                <label style="display:block;margin-bottom:8px;font-weight:500;">Sábado</label>
+                <div class="time-grid" style="margin-bottom:8px;">
+                    <div>
+                        <span style="font-size:12px;color:var(--color-text-tertiary);display:block;text-align:center;margin-bottom:4px;">Entrada</span>
+                        <input type="time" id="padrao-sab-e1" value="08:00" onchange="salvarConfig()">
+                    </div>
+                    <div>
+                        <span style="font-size:12px;color:var(--color-text-tertiary);display:block;text-align:center;margin-bottom:4px;">Saída almoço</span>
+                        <input type="time" id="padrao-sab-s1" value="12:00" onchange="salvarConfig()">
+                    </div>
+                </div>
+                <div class="time-grid">
+                    <div>
+                        <span style="font-size:12px;color:var(--color-text-tertiary);display:block;text-align:center;margin-bottom:4px;">Retorno</span>
+                        <input type="time" id="padrao-sab-e2" value="13:00" onchange="salvarConfig()">
+                    </div>
+                    <div>
+                        <span style="font-size:12px;color:var(--color-text-tertiary);display:block;text-align:center;margin-bottom:4px;">Saída</span>
+                        <input type="time" id="padrao-sab-s2" value="12:00" onchange="salvarConfig()">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="preencherDiasNormais()" style="margin-top:8px;">
+                Preencher dias normais deste mês
+            </button>
+            <p style="font-size:12px;color:var(--color-text-tertiary);margin-top:8px;text-align:center;">
+                Dias já lançados (alterações, faltas etc.) serão preservados.
+            </p>
+        </div>
+
         <div style="text-align:center;margin-top:20px;display:flex;gap:12px;">
             <button onclick="exportarDados()" class="btn-secondary">Exportar Backup</button>
             <button onclick="document.getElementById('input-importar').click()" class="btn-primary">Importar Backup</button>
@@ -659,10 +722,14 @@ function abrirModal(dia) {
         document.getElementById('m-s2').value = dados.s2 || '17:00';
     } else {
         document.getElementById('m-tipo').value = 'normal';
-        document.getElementById('m-e1').value = '08:00';
-        document.getElementById('m-s1').value = '12:00';
-        document.getElementById('m-e2').value = '13:00';
-        document.getElementById('m-s2').value = '17:00';
+        // Usar horário padrão conforme o dia da semana
+        const ds = new Date(anoAtual, mesAtual, diaSelecionado).getDay();
+        const ehSabado = ds === 6;
+        const prefix = ehSabado ? 'padrao-sab' : 'padrao-sem';
+        document.getElementById('m-e1').value = document.getElementById(prefix + '-e1')?.value || '08:00';
+        document.getElementById('m-s1').value = document.getElementById(prefix + '-s1')?.value || '12:00';
+        document.getElementById('m-e2').value = document.getElementById(prefix + '-e2')?.value || '13:00';
+        document.getElementById('m-s2').value = document.getElementById(prefix + '-s2')?.value || '17:00';
     }
 
     document.getElementById('modal-title').textContent = dia ? `Editar Dia ${dia}` : 'Novo Lançamento';
@@ -703,6 +770,58 @@ function salvarDia() {
     mostrarToast('✅ Lançamento salvo!');
 }
 
+function preencherDiasNormais() {
+    const chaveMes = `${anoAtual}-${mesAtual}`;
+    if (!lancamentos[chaveMes]) lancamentos[chaveMes] = {};
+
+    const totalDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
+    let preenchidos = 0;
+
+    const sem = {
+        e1: document.getElementById('padrao-sem-e1').value || '08:00',
+        s1: document.getElementById('padrao-sem-s1').value || '12:00',
+        e2: document.getElementById('padrao-sem-e2').value || '13:00',
+        s2: document.getElementById('padrao-sem-s2').value || '17:00'
+    };
+    const sab = {
+        e1: document.getElementById('padrao-sab-e1').value || '08:00',
+        s1: document.getElementById('padrao-sab-s1').value || '12:00',
+        e2: document.getElementById('padrao-sab-e2').value || '13:00',
+        s2: document.getElementById('padrao-sab-s2').value || '12:00'
+    };
+
+    for (let d = 1; d <= totalDias; d++) {
+        const ds = new Date(anoAtual, mesAtual, d).getDay();
+        // Apenas segunda (1) a sábado (6)
+        if (ds === 0) continue;
+
+        // Pula feriados (deixe para lançamento manual)
+        if (isFeriado(anoAtual, mesAtual, d)) continue;
+
+        // Preserva dias já lançados (alterações, faltas, etc.)
+        if (lancamentos[chaveMes][d]) continue;
+
+        const horario = (ds === 6) ? sab : sem;
+        lancamentos[chaveMes][d] = {
+            tipo: 'normal',
+            e1: horario.e1,
+            s1: horario.s1,
+            e2: horario.e2,
+            s2: horario.s2
+        };
+        preenchidos++;
+    }
+
+    if (preenchidos > 0) {
+        salvarLancamentos();
+        renderDias();
+        recalcular();
+        mostrarToast(`✅ ${preenchidos} dia(s) preenchido(s) automaticamente`);
+    } else {
+        mostrarToast('Nenhum dia novo para preencher (todos já lançados ou apenas domingos)', true);
+    }
+}
+
 // ===== PERSISTÊNCIA =====
 function salvarLancamentos() {
     try { localStorage.setItem('meuPontoApp', JSON.stringify(lancamentos)); } catch(e) {}
@@ -718,6 +837,13 @@ function carregarDados() {
             const val = localStorage.getItem('meuPonto_' + id);
             if (val) document.getElementById(id).value = val;
         });
+        // Horários padrão
+        ['padrao-sem-e1','padrao-sem-s1','padrao-sem-e2','padrao-sem-s2',
+         'padrao-sab-e1','padrao-sab-s1','padrao-sab-e2','padrao-sab-s2'].forEach(id => {
+            const val = localStorage.getItem('meuPonto_' + id);
+            const el = document.getElementById(id);
+            if (val && el) el.value = val;
+        });
     } catch(e) {}
 }
 
@@ -726,6 +852,12 @@ function salvarConfig() {
         localStorage.setItem('meuPontoSalario', document.getElementById('salario').value);
         ['jornada-semana','jornada-sabado','divisor','adicional-he'].forEach(id => {
             localStorage.setItem('meuPonto_' + id, document.getElementById(id).value);
+        });
+        // Horários padrão
+        ['padrao-sem-e1','padrao-sem-s1','padrao-sem-e2','padrao-sem-s2',
+         'padrao-sab-e1','padrao-sab-s1','padrao-sab-e2','padrao-sab-s2'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) localStorage.setItem('meuPonto_' + id, el.value);
         });
     } catch(e) {}
     recalcular();
@@ -743,7 +875,7 @@ function mudarMes(dir) {
 // ===== EXPORT / IMPORT =====
 function exportarDados() {
     const dados = {
-        versao: 4.2,
+        versao: 4.3,
         exportadoEm: new Date().toISOString(),
         lancamentos,
         salario: document.getElementById('salario').value,
@@ -751,7 +883,19 @@ function exportarDados() {
             jornadaSemana: document.getElementById('jornada-semana').value,
             jornadaSabado: document.getElementById('jornada-sabado').value,
             divisor: document.getElementById('divisor').value,
-            adicionalHE: document.getElementById('adicional-he').value
+            adicionalHE: document.getElementById('adicional-he').value,
+            padraoSem: {
+                e1: document.getElementById('padrao-sem-e1')?.value || '08:00',
+                s1: document.getElementById('padrao-sem-s1')?.value || '12:00',
+                e2: document.getElementById('padrao-sem-e2')?.value || '13:00',
+                s2: document.getElementById('padrao-sem-s2')?.value || '17:00'
+            },
+            padraoSab: {
+                e1: document.getElementById('padrao-sab-e1')?.value || '08:00',
+                s1: document.getElementById('padrao-sab-s1')?.value || '12:00',
+                e2: document.getElementById('padrao-sab-e2')?.value || '13:00',
+                s2: document.getElementById('padrao-sab-s2')?.value || '12:00'
+            }
         }
     };
     const blob = new Blob([JSON.stringify(dados, null, 2)], {type: 'application/json'});
@@ -776,9 +920,25 @@ function importarDados(e) {
                 if (dados.configs) {
                     const idMap = { jornadaSemana: 'jornada-semana', jornadaSabado: 'jornada-sabado', adicionalHE: 'adicional-he' };
                     Object.keys(dados.configs).forEach(k => {
+                        if (k === 'padraoSem' || k === 'padraoSab') return;
                         const el = document.getElementById(idMap[k] || k);
                         if (el) el.value = dados.configs[k];
                     });
+                    // Restaurar horários padrão
+                    if (dados.configs.padraoSem) {
+                        const p = dados.configs.padraoSem;
+                        if (p.e1) document.getElementById('padrao-sem-e1').value = p.e1;
+                        if (p.s1) document.getElementById('padrao-sem-s1').value = p.s1;
+                        if (p.e2) document.getElementById('padrao-sem-e2').value = p.e2;
+                        if (p.s2) document.getElementById('padrao-sem-s2').value = p.s2;
+                    }
+                    if (dados.configs.padraoSab) {
+                        const p = dados.configs.padraoSab;
+                        if (p.e1) document.getElementById('padrao-sab-e1').value = p.e1;
+                        if (p.s1) document.getElementById('padrao-sab-s1').value = p.s1;
+                        if (p.e2) document.getElementById('padrao-sab-e2').value = p.e2;
+                        if (p.s2) document.getElementById('padrao-sab-s2').value = p.s2;
+                    }
                 }
                 salvarLancamentos();
                 salvarConfig();
@@ -844,6 +1004,7 @@ window.atualizarCampos = atualizarCampos;
 window.salvarConfig = salvarConfig;
 window.exportarDados = exportarDados;
 window.importarDados = importarDados;
+window.preencherDiasNormais = preencherDiasNormais;
 window.formatarSalario = function(input) {
     input.value = input.value.replace(/[^0-9,]/g, '');
 };
