@@ -534,15 +534,36 @@ function calcularHorasDia(dados, dia) {
 
     // Dias especiais que não geram HE nem HN e não descontam
     if (dados.tipo === 'folga' || dados.tipo === 'falta' || dados.tipo === 'atestado' || dados.tipo === 'ferias' || dados.tipo === 'tre') {
-        const jornadaEsperada = (ehFeriado || ehDomingo) ? 0 : (ehSabado ? jornadaSabado : jornadaSemana);
-
+        let horasTre = 0;
         if (dados.tipo === 'tre') {
-            // TRE = dia remunerado normalmente (conta como trabalhado, sem HE e sem HN)
+            // Calcula horas reais do horário padrão
+            const prefix = ehSabado ? 'padrao-sab' : 'padrao-sem';
+            const e1 = horaParaDecimal(document.getElementById(prefix + '-e1')?.value || '08:00');
+            const s1 = horaParaDecimal(document.getElementById(prefix + '-s1')?.value || '12:00');
+            const e2 = horaParaDecimal(document.getElementById(prefix + '-e2')?.value || '13:00');
+            const s2 = horaParaDecimal(document.getElementById(prefix + '-s2')?.value || '17:00');
+            if (s1 > e1) horasTre += s1 - e1;
+            if (s2 > e2) horasTre += s2 - e2;
+            if (horasTre === 0) {
+                horasTre = (ehFeriado || ehDomingo) ? 0 : (ehSabado ? jornadaSabado : jornadaSemana);
+            }
+
+            const jornadaEsperada = (ehFeriado || ehDomingo) ? 0 : (ehSabado ? jornadaSabado : jornadaSemana);
+            const he = Math.max(0, horasTre - jornadaEsperada);
+            const hn = 0; // Nunca desconta em TRE
+
+            const valorHora = getValorHora();
+            let valHe = 0;
+            if (valorHora > 0 && he > 0) {
+                const multiplicador = (ehFeriado || ehDomingo) ? 2 : (1 + adicionalHE/100);
+                valHe = he * valorHora * multiplicador;
+            }
+
             return { 
-                trabalhado: jornadaEsperada, 
-                he: 0, 
-                hn: 0, 
-                valHe: 0, 
+                trabalhado: horasTre, 
+                he, 
+                hn, 
+                valHe, 
                 ehDomFer: ehDomingo || ehFeriado, 
                 falta: false, 
                 atestado: false, 
@@ -608,7 +629,7 @@ function recalcular() {
         if (r.atestado) continue;
         if (dados.tipo === 'folga') continue;
         if (dados.tipo === 'ferias') continue;
-        // TRE já retorna trabalhado = jornada e será contabilizado abaixo (sem HE)
+        // TRE conta como dia trabalhado e pode gerar HE (nunca HN)
 
         diasTrabalhados++;
         if (ds !== 0 && !isFeriado(anoAtual, mesAtual, d)) diasUteisTrabalhados++;
