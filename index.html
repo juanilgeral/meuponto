@@ -220,6 +220,18 @@
             width: 100%;
             cursor: pointer;
         }
+        .btn-danger {
+            background: var(--color-error);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 40px;
+            padding: 14px;
+            font-weight: 600;
+            font-size: 15px;
+            width: 100%;
+            cursor: pointer;
+        }
+        .btn-danger:active { opacity: 0.8; }
 
         /* time inputs em grid */
         .time-grid {
@@ -328,7 +340,7 @@
         <div class="section">
             <label style="display:block;margin-bottom:6px;font-weight:500;">Salário mensal (R$)</label>
             <input type="text" id="salario" placeholder="Ex: 3626,88" oninput="formatarSalario(this)" onchange="salvarConfig()">
-            
+
             <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                 <div>
                     <label style="display:block;margin-bottom:6px;font-weight:500;">Jornada seg-sex (h)</label>
@@ -355,7 +367,7 @@
         <div class="section" style="margin-top:16px;">
             <strong style="font-size:17px;display:block;margin-bottom:12px;">Horário Padrão (Seg–Sáb)</strong>
             <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:16px;">
-                Defina o horário normal de trabalho. Depois use o botão para preencher automaticamente os dias de segunda a sábado do mês atual que ainda não foram lançados.
+                Defina o horário normal de trabalho. O botão preenche o mês atual: segunda a sábado com estes horários e domingo como Folga / DSR. Dias que você lançou ou editou manualmente são preservados; os preenchidos automaticamente são atualizados com os horários novos.
             </p>
 
             <div style="margin-bottom:16px;">
@@ -410,7 +422,19 @@
                 Preencher dias normais deste mês
             </button>
             <p style="font-size:12px;color:var(--color-text-tertiary);margin-top:8px;text-align:center;">
-                Dias já lançados (alterações, faltas etc.) serão preservados.
+                Dias lançados ou editados manualmente (alterações, faltas etc.) serão preservados.
+            </p>
+        </div>
+
+        <!-- Limpeza -->
+        <div class="section" style="margin-top:16px;">
+            <strong style="font-size:17px;display:block;margin-bottom:12px;">Limpeza</strong>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <button class="btn-danger" onclick="resetarMes()">🗑️ Apagar lançamentos deste mês</button>
+                <button class="btn-danger" onclick="resetarTudo()">⚠️ Apagar TODOS os lançamentos</button>
+            </div>
+            <p style="font-size:12px;color:var(--color-text-tertiary);margin-top:8px;text-align:center;">
+                Salário, jornada e horários padrão são mantidos.
             </p>
         </div>
 
@@ -421,12 +445,11 @@
         </div>
     </div>
 
-    <!-- ===== MODAL CORRIGIDO ===== -->
+    <!-- ===== MODAL ===== -->
     <div id="modal" class="modal-overlay hidden">
         <div class="modal" onclick="event.stopPropagation()">
             <div style="font-size:20px;font-weight:600;margin-bottom:20px;" id="modal-title">Lançar Dia</div>
 
-            <!-- SELETOR DE DIA: grade numérica simples, sem input type=date -->
             <div style="margin-bottom:18px;">
                 <label style="display:block;margin-bottom:8px;font-weight:500;">Dia do mês — <span id="label-mes-modal"></span></label>
                 <div class="dia-grid" id="dia-grid"></div>
@@ -559,16 +582,16 @@ function calcularHorasDia(dados, dia) {
                 valHe = he * valorHora * multiplicador;
             }
 
-            return { 
-                trabalhado: horasTre, 
-                he, 
-                hn, 
-                valHe, 
-                ehDomFer: ehDomingo || ehFeriado, 
-                falta: false, 
-                atestado: false, 
+            return {
+                trabalhado: horasTre,
+                he,
+                hn,
+                valHe,
+                ehDomFer: ehDomingo || ehFeriado,
+                falta: false,
+                atestado: false,
                 ferias: false,
-                tre: true 
+                tre: true
             };
         }
 
@@ -595,7 +618,7 @@ function calcularHorasDia(dados, dia) {
     if (s2 > e2) hTrab += s2 - e2;
 
     const jornadaEsperada = (ehFeriado || ehDomingo) ? 0 : (ehSabado ? jornadaSabado : jornadaSemana);
-    
+
     const he = Math.max(0, hTrab - jornadaEsperada);
     const hn = Math.max(0, jornadaEsperada - hTrab);
 
@@ -612,7 +635,7 @@ function calcularHorasDia(dados, dia) {
 function recalcular() {
     const lcs = lancamentos[`${anoAtual}-${mesAtual}`] || {};
     const totalDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
-    
+
     let totalHE = 0, totalHEDom = 0, totalHN = 0, totalValHE = 0, totalValHEDom = 0;
     let diasTrabalhados = 0, faltas = 0, diasUteisTrabalhados = 0;
 
@@ -659,7 +682,7 @@ function recalcular() {
     document.getElementById('r-he-semana').textContent = decimalParaHHMM(totalHE);
     document.getElementById('r-he-dom').textContent = decimalParaHHMM(totalHEDom);
     document.getElementById('r-he-total').textContent = `Total HE bruto: R$ ${subtotalHE.toFixed(2).replace('.', ',')}`;
-    
+
     if (salario > 0) {
         document.getElementById('r-salario').textContent = 'R$ ' + salario.toFixed(2).replace('.', ',');
         document.getElementById('r-val-he-sem').textContent = '+ R$ ' + totalValHE.toFixed(2).replace('.', ',');
@@ -686,7 +709,7 @@ function renderDias() {
             if (dados.tipo === 'falta') info = '<span class="badge badge-falta">Falta</span>';
             else if (dados.tipo === 'atestado') info = '<span class="badge badge-atestado">Atestado</span>';
             else if (dados.tipo === 'feriado' || isFeriado(anoAtual, mesAtual, d)) info = '<span class="badge badge-feriado">Feriado</span>';
-            else if (dados.tipo === 'folga') info = '<span class="badge badge-folga">Folga</span>';
+            else if (dados.tipo === 'folga') info = '<span class="badge badge-folga">Folga / DSR</span>';
             else if (dados.tipo === 'ferias') info = '<span class="badge badge-ferias">Férias</span>';
             else if (dados.tipo === 'tre') info = `<span class="badge badge-tre">TRE</span> <span style="font-size:12.5px;color:var(--color-text-secondary)">${r.trabalhado.toFixed(1)}h</span>`;
             else info = `<span style="font-size:12.5px;color:var(--color-text-secondary)">${r.trabalhado.toFixed(1)}h</span>`;
@@ -729,7 +752,6 @@ function renderDiaGrid(diaSel) {
 
 function selecionarDia(d) {
     diaSelecionado = d;
-    // atualiza highlight
     document.querySelectorAll('.dia-btn').forEach(btn => {
         btn.classList.toggle('selected', parseInt(btn.textContent) === d);
     });
@@ -738,7 +760,6 @@ function selecionarDia(d) {
 // ===== MODAL =====
 function abrirModal(dia) {
     diaSelecionado = dia || new Date().getDate();
-    // clamp ao mês
     const totalDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
     if (diaSelecionado > totalDias) diaSelecionado = 1;
 
@@ -756,7 +777,6 @@ function abrirModal(dia) {
         document.getElementById('m-s2').value = dados.s2 || '17:00';
     } else {
         document.getElementById('m-tipo').value = 'normal';
-        // Usar horário padrão conforme o dia da semana
         const ds = new Date(anoAtual, mesAtual, diaSelecionado).getDay();
         const ehSabado = ds === 6;
         const prefix = ehSabado ? 'padrao-sab' : 'padrao-sem';
@@ -789,12 +809,14 @@ function salvarDia() {
     const chaveMes = `${anoAtual}-${mesAtual}`;
     if (!lancamentos[chaveMes]) lancamentos[chaveMes] = {};
 
+    // Lançamento feito/editado pelo usuário = manual (auto: false)
     lancamentos[chaveMes][diaSelecionado] = {
         tipo: document.getElementById('m-tipo').value,
         e1: document.getElementById('m-e1').value,
         s1: document.getElementById('m-s1').value,
         e2: document.getElementById('m-e2').value,
-        s2: document.getElementById('m-s2').value
+        s2: document.getElementById('m-s2').value,
+        auto: false
     };
 
     salvarLancamentos();
@@ -809,7 +831,7 @@ function preencherDiasNormais() {
     if (!lancamentos[chaveMes]) lancamentos[chaveMes] = {};
 
     const totalDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
-    let preenchidos = 0;
+    let novos = 0, atualizados = 0, preservados = 0;
 
     const sem = {
         e1: document.getElementById('padrao-sem-e1').value || '08:00',
@@ -826,34 +848,62 @@ function preencherDiasNormais() {
 
     for (let d = 1; d <= totalDias; d++) {
         const ds = new Date(anoAtual, mesAtual, d).getDay();
-        // Apenas segunda (1) a sábado (6)
-        if (ds === 0) continue;
+        const existente = lancamentos[chaveMes][d];
 
-        // Pula feriados (deixe para lançamento manual)
-        if (isFeriado(anoAtual, mesAtual, d)) continue;
+        // Preserva dias lançados/editados manualmente (sem a marca auto)
+        if (existente && !existente.auto) { preservados++; continue; }
 
-        // Preserva dias já lançados (alterações, faltas, etc.)
-        if (lancamentos[chaveMes][d]) continue;
+        let novo;
+        if (ds === 0) {
+            // Domingo = Folga / DSR
+            novo = { tipo: 'folga', e1: '', s1: '', e2: '', s2: '', auto: true };
+        } else {
+            // Feriados ficam para lançamento manual
+            if (isFeriado(anoAtual, mesAtual, d)) continue;
+            const h = (ds === 6) ? sab : sem;
+            novo = { tipo: 'normal', e1: h.e1, s1: h.s1, e2: h.e2, s2: h.s2, auto: true };
+        }
 
-        const horario = (ds === 6) ? sab : sem;
-        lancamentos[chaveMes][d] = {
-            tipo: 'normal',
-            e1: horario.e1,
-            s1: horario.s1,
-            e2: horario.e2,
-            s2: horario.s2
-        };
-        preenchidos++;
+        if (existente) atualizados++; else novos++;
+        lancamentos[chaveMes][d] = novo;
     }
 
-    if (preenchidos > 0) {
+    if (novos + atualizados > 0) {
         salvarLancamentos();
         renderDias();
         recalcular();
-        mostrarToast(`✅ ${preenchidos} dia(s) preenchido(s) automaticamente`);
+        mostrarToast(`✅ Novos: ${novos} • Atualizados: ${atualizados} • Preservados: ${preservados}`);
     } else {
-        mostrarToast('Nenhum dia novo para preencher (todos já lançados ou apenas domingos)', true);
+        mostrarToast('Nada para preencher (dias já lançados manualmente)', true);
     }
+}
+
+// ===== RESET =====
+function resetarMes() {
+    const chaveMes = `${anoAtual}-${mesAtual}`;
+    const qtd = Object.keys(lancamentos[chaveMes] || {}).length;
+    if (qtd === 0) {
+        mostrarToast('Não há lançamentos neste mês', true);
+        return;
+    }
+    if (!confirm(`Apagar ${qtd} lançamento(s) de ${MESES[mesAtual]} ${anoAtual}? Não dá para desfazer.`)) return;
+
+    delete lancamentos[chaveMes];
+    salvarLancamentos();
+    renderDias();
+    recalcular();
+    mostrarToast('🗑️ Lançamentos do mês apagados');
+}
+
+function resetarTudo() {
+    if (!confirm('Apagar TODOS os lançamentos de TODOS os meses? Recomendo exportar um backup antes.')) return;
+    if (!confirm('Tem certeza mesmo? Não tem como desfazer.')) return;
+
+    lancamentos = {};
+    salvarLancamentos();
+    renderDias();
+    recalcular();
+    mostrarToast('🗑️ Todos os lançamentos foram apagados');
 }
 
 // ===== PERSISTÊNCIA =====
@@ -909,7 +959,7 @@ function mudarMes(dir) {
 // ===== EXPORT / IMPORT =====
 function exportarDados() {
     const dados = {
-        versao: 4.3,
+        versao: 4.4,
         exportadoEm: new Date().toISOString(),
         lancamentos,
         salario: document.getElementById('salario').value,
@@ -1039,6 +1089,8 @@ window.salvarConfig = salvarConfig;
 window.exportarDados = exportarDados;
 window.importarDados = importarDados;
 window.preencherDiasNormais = preencherDiasNormais;
+window.resetarMes = resetarMes;
+window.resetarTudo = resetarTudo;
 window.formatarSalario = function(input) {
     input.value = input.value.replace(/[^0-9,]/g, '');
 };
